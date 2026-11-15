@@ -24,6 +24,7 @@ async function main() {
         await conn.query('SET NAMES utf8mb4');
         await conn.query('DELETE FROM publications');
         await conn.query('DELETE FROM artist_profile');
+        await conn.query('DELETE FROM admin_sessions');
 
         const statements = sql
             .split(';')
@@ -34,6 +35,9 @@ async function main() {
             await conn.query(stmt);
         }
 
+        const { ensureAdmin } = require('./bootstrap-admin');
+        await ensureAdmin(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+
         const [artist] = await conn.query('SELECT name, location FROM artist_profile WHERE id = 1');
         const [pubs] = await conn.query('SELECT COUNT(*) AS total FROM publications');
         console.log('[reseed] artist:', artist[0].name, '|', artist[0].location);
@@ -41,6 +45,7 @@ async function main() {
     } finally {
         conn.release();
         await pool.end();
+        process.exit(0);
     }
 }
 

@@ -87,10 +87,10 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 06: Processamento de imagens (Python + FastAPI + Pillow, variantes WebP 400/800/1600 px testadas localmente).
+Em desenvolvimento — Etapa 07: Autenticação real (login/logout/sessões hasheadas no banco, estudo de SQL Server documentado).
 
 - Produção (frontend): https://frontend-nine-taupe-63.vercel.app
 - Admin: https://frontend-nine-taupe-63.vercel.app/admin/login
 - API local: http://localhost:3000/api/health
 - Image-service local: http://127.0.0.1:8000/health
-- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`, `docs/ETAPA-05-FULLSTACK.md`, `docs/ETAPA-06-IMAGES.md`
+- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`, `docs/ETAPA-05-FULLSTACK.md`, `docs/ETAPA-06-IMAGES.md`, `docs/ETAPA-07-AUTH-SQLSERVER.md`

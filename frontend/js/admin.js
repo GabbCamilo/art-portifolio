@@ -1,15 +1,19 @@
 /* ========================================
-   ART PORTFOLIO — ADMIN (VISUAL)
-   Estrutura visual apenas. Autenticação,
-   persistência e processamento de imagens
-   serão integrados ao backend (Etapas 04-07).
+   ART PORTFOLIO — ADMIN
+   Autenticação real via API (Etapa 07):
+   login/logout/sessão contra o backend.
+   Dados do dashboard ainda simulados até
+   a integração de upload/CRUD (Etapa 08).
 ======================================== */
 
 (function () {
     'use strict';
 
+    var API_BASE = 'http://localhost:3000/api';
+    var TOKEN_KEY = 'artfolio_admin_token';
+
     /* -------------------------------------
-       1. LOGIN (ESTRUTURA VISUAL)
+       1. LOGIN (API REAL)
     ------------------------------------- */
 
     function initLogin() {
@@ -46,10 +50,85 @@
                 return;
             }
 
-            /* A autenticação real será validada no backend.
-               Nenhuma credencial é armazenada localmente. */
-            message.textContent =
-                'Autenticação será implementada no backend (Etapa 07). Nenhuma senha foi armazenada.';
+            fetch(API_BASE + '/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: userInput.value.trim(),
+                    password: passwordInput.value,
+                }),
+            })
+                .then(function (res) {
+                    return res.json().then(function (data) { return { status: res.status, data: data }; });
+                })
+                .then(function (result) {
+                    if (result.status === 200 && result.data.token) {
+                        localStorage.setItem(TOKEN_KEY, result.data.token);
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                    message.classList.add('is-error');
+                    message.textContent = (result.data && result.data.error) || 'Falha no login. Tente novamente.';
+                })
+                .catch(function () {
+                    message.classList.add('is-error');
+                    message.textContent = 'Serviço de autenticação indisponível no momento.';
+                });
+        });
+    }
+
+    function getToken() {
+        return localStorage.getItem(TOKEN_KEY);
+    }
+
+    function clearToken() {
+        localStorage.removeItem(TOKEN_KEY);
+    }
+
+    function requireSession() {
+        var token = getToken();
+        if (!token) {
+            if (!document.getElementById('login-form')) {
+                window.location.href = 'login.html';
+            }
+            return Promise.resolve(null);
+        }
+        return fetch(API_BASE + '/admin/session', {
+            headers: { Authorization: 'Bearer ' + token },
+        })
+            .then(function (res) {
+                if (res.status === 401) {
+                    clearToken();
+                    window.location.href = 'login.html';
+                    return null;
+                }
+                if (!res.ok) return null;
+                return res.json();
+            })
+            .catch(function () {
+                clearToken();
+                window.location.href = 'login.html';
+                return null;
+            });
+    }
+
+    function initLogout() {
+        var link = document.getElementById('logout-link');
+        if (!link) return;
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            var token = getToken();
+            clearToken();
+            if (token) {
+                fetch(API_BASE + '/admin/logout', {
+                    method: 'POST',
+                    headers: { Authorization: 'Bearer ' + token },
+                }).catch(function () {}).finally(function () {
+                    window.location.href = 'login.html';
+                });
+            } else {
+                window.location.href = 'login.html';
+            }
         });
     }
 
@@ -376,7 +455,12 @@
 
     function init() {
         initLogin();
-        initDashboard();
+        requireSession().then(function (session) {
+            if (session) {
+                initDashboard();
+                initLogout();
+            }
+        });
     }
 
     if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
