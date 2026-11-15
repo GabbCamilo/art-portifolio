@@ -1,0 +1,21 @@
+{
+  "name": "art-portfolio-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API REST do Art Portfolio (Node.js + Express + MySQL)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "mysql2": "^3.11.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -87,8 +87,9 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 03: Banco de dados e deploy (MySQL `art_portfolio` populado, usuário `art_portfolio_app` com CRUD, frontend estático publicado no Vercel).
+Em desenvolvimento — Etapa 04: Backend (API REST Express + MySQL, CRUD admin com token, testada localmente).
 
-- Produção: https://frontend-nine-taupe-63.vercel.app
+- Produção (frontend): https://frontend-nine-taupe-63.vercel.app
 - Admin: https://frontend-nine-taupe-63.vercel.app/admin/login
-- Relatório: `docs/ETAPA-03-DATABASE-DEPLOY.md`
+- API local: http://localhost:3000/api/health
+- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`
