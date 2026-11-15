@@ -2,14 +2,16 @@
    ART PORTFOLIO — FRONTEND VANILLA JS
    Header com destaque, hero editorial
    50/50 e muro de fotos em grade fluida.
-   Dados simulados até a Etapa 05 (backend).
-======================================== */
+   Dados via fetch() na API (Etapa 05),
+   com fallback simulado se a API estiver
+   indisponível.
+   ======================================== */
 
 /* -------------------------------------
-   1. DADOS SIMULADOS
-------------------------------------- */
+   1. DADOS SIMULADOS (fallback offline)
+   ------------------------------------- */
 
-const artistProfile = {
+const SIMULATED_ARTIST = {
     name: 'Kenyureru',
     location: 'São Paulo, Brasil',
     medium: 'Digital',
@@ -18,7 +20,7 @@ const artistProfile = {
     patreon: 'N/A',
 };
 
-const publications = [
+const SIMULATED_PUBLICATIONS = [
     {
         id: 'featured-01',
         title: 'Retratos Urbanos',
@@ -173,39 +175,72 @@ const publications = [
 
 /* -------------------------------------
    2. CONFIGURAÇÃO E ESTADO
-------------------------------------- */
+   ------------------------------------- */
 
+const API_BASE = 'http://localhost:3000/api';
 const BATCH_INITIAL = 6;
 const BATCH_NEXT = 4;
 const INDICATOR_COUNT = 5;
 const PREV_CLICK_ZONE_RATIO = 0.25;
 
 const state = {
-    renderedCount: 0,
+    artist: null,
+    featured: null,
     collection: [],
+    total: 0,
+    renderedCount: 0,
+    useApi: false,
     lightboxIndex: 0,
     lastFocusedElement: null,
 };
 
 /* -------------------------------------
-   3. UTILITÁRIOS PUROS
-------------------------------------- */
+   3. ACESSO A DADOS (API + fallback)
+   ------------------------------------- */
 
-function getFeatured() {
-    return publications.find(p => p.featured) || null;
+async function apiFetch(path) {
+    const res = await fetch(API_BASE + path);
+    if (!res.ok) {
+        throw new Error(`API ${path} respondeu ${res.status}`);
+    }
+    return res.json();
 }
 
-function getChronological() {
-    return publications
+async function loadArtist() {
+    return apiFetch('/artist');
+}
+
+async function loadFeatured() {
+    const data = await apiFetch('/publications?featured=true');
+    return data.items[0] || null;
+}
+
+async function loadFeedBatch(limit, offset) {
+    return apiFetch(`/publications?featured=false&limit=${limit}&offset=${offset}`);
+}
+
+function useSimulatedFallback() {
+    state.artist = SIMULATED_ARTIST;
+    state.featured = SIMULATED_PUBLICATIONS.find(p => p.featured) || null;
+    state.collection = SIMULATED_PUBLICATIONS
         .filter(p => !p.featured)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
+    state.total = state.collection.length;
+    state.useApi = false;
 }
 
-function getCollection() {
-    const featured = getFeatured();
-    const chronological = getChronological();
-    return featured ? [featured, ...chronological] : chronological;
+async function loadInitialData() {
+    state.artist = await loadArtist();
+    state.featured = await loadFeatured();
+    const first = await loadFeedBatch(BATCH_INITIAL, 0);
+    state.collection = first.items;
+    state.total = first.total;
+    state.useApi = true;
 }
+
+/* -------------------------------------
+   4. UTILITÁRIOS PUROS
+   ------------------------------------- */
 
 function formatDateISO(isoDate) {
     const dateObj = new Date(isoDate);
@@ -244,11 +279,11 @@ function imageSrc(image) {
 }
 
 /* -------------------------------------
-   4. HEADER — OBRA EM DESTAQUE
-------------------------------------- */
+   5. HEADER — OBRA EM DESTAQUE
+   ------------------------------------- */
 
 function renderFeatured() {
-    const featured = getFeatured();
+    const featured = state.featured;
     if (!featured) return;
 
     const image = document.getElementById('featured-image');
@@ -261,14 +296,14 @@ function renderFeatured() {
 }
 
 /* -------------------------------------
-   5. HERO — IMAGEM + CAIXA DE TEXTO 50/50
-------------------------------------- */
+   6. HERO — IMAGEM + CAIXA DE TEXTO 50/50
+   ------------------------------------- */
 
 function renderHero() {
-    const featured = getFeatured();
+    const featured = state.featured;
     if (!featured) return;
 
-    const secondary = getChronological()[0];
+    const secondary = state.collection[0] || null;
     const heroImage = document.getElementById('hero-image');
 
     if (secondary && heroImage) {
@@ -279,28 +314,29 @@ function renderHero() {
         document.getElementById('hero-name').textContent = secondary.image.file_name;
     }
 
-    document.getElementById('detail-artist').textContent = artistProfile.name;
-    document.getElementById('detail-location').textContent = artistProfile.location;
-    document.getElementById('detail-medium').textContent = artistProfile.medium;
+    const artist = state.artist || SIMULATED_ARTIST;
+    document.getElementById('detail-artist').textContent = artist.name;
+    document.getElementById('detail-location').textContent = artist.location;
+    document.getElementById('detail-medium').textContent = artist.medium;
 
     const websiteLink = document.getElementById('detail-website');
     websiteLink.innerHTML = '';
     const websiteAnchor = document.createElement('a');
-    websiteAnchor.href = artistProfile.website;
+    websiteAnchor.href = artist.website;
     websiteAnchor.textContent = 'Clique aqui';
     websiteAnchor.target = '_blank';
     websiteAnchor.rel = 'noopener';
     websiteLink.appendChild(websiteAnchor);
 
-    document.getElementById('detail-store').textContent = artistProfile.store;
-    document.getElementById('detail-patreon').textContent = artistProfile.patreon;
+    document.getElementById('detail-store').textContent = artist.store;
+    document.getElementById('detail-patreon').textContent = artist.patreon;
     document.getElementById('hero-description').textContent = featured.description;
     document.getElementById('hero-complementary').textContent = featured.complementary;
 }
 
 /* -------------------------------------
-   6. MURO DE FOTOS — GRADE FLUIDA
-------------------------------------- */
+   7. MURO DE FOTOS — GRADE FLUIDA
+   ------------------------------------- */
 
 function createWallItem(post, globalIndex) {
     const button = document.createElement('button');
@@ -328,25 +364,38 @@ function createWallItem(post, globalIndex) {
     return button;
 }
 
-function renderNextBatch() {
+function appendWallItem(post) {
+    const wall = document.getElementById('wall');
+    if (!wall) return;
+    const globalIndex = state.collection.indexOf(post);
+    wall.appendChild(createWallItem(post, globalIndex));
+}
+
+async function renderNextBatch() {
     const wall = document.getElementById('wall');
     const status = document.getElementById('feed-status');
     if (!wall || !status) return;
 
-    const remaining = state.collection.slice(state.renderedCount);
-    if (remaining.length === 0) {
+    const remaining = state.total - state.renderedCount;
+    if (remaining <= 0) {
         status.textContent = 'Fim das publicações.';
         return;
     }
 
-    const batch = remaining.slice(0, BATCH_NEXT);
-    batch.forEach(post => {
-        const globalIndex = state.collection.indexOf(post);
-        wall.appendChild(createWallItem(post, globalIndex));
-    });
+    let batch;
+    if (state.useApi) {
+        const size = Math.min(BATCH_NEXT, remaining);
+        const data = await loadFeedBatch(size, state.collection.length);
+        batch = data.items;
+        state.collection.push(...batch);
+    } else {
+        batch = state.collection.slice(state.renderedCount, state.renderedCount + BATCH_NEXT);
+    }
+
+    batch.forEach(appendWallItem);
     state.renderedCount += batch.length;
 
-    if (state.renderedCount >= state.collection.length) {
+    if (state.renderedCount >= state.total) {
         status.textContent = 'Fim das publicações.';
         const sentinel = document.getElementById('feed-sentinel');
         if (sentinel && sentinelObserver) {
@@ -359,23 +408,17 @@ function renderNextBatch() {
 
 let sentinelObserver = null;
 
-function initProgressiveFeed() {
-    /* O muro exclui a publicação em destaque (ela vive no header/hero). */
-    state.collection = getChronological();
-
+function renderInitialWall() {
     const wall = document.getElementById('wall');
     const status = document.getElementById('feed-status');
     const sentinel = document.getElementById('feed-sentinel');
     if (!wall || !status) return;
 
     const firstBatch = state.collection.slice(0, BATCH_INITIAL);
-    firstBatch.forEach(post => {
-        const globalIndex = state.collection.indexOf(post);
-        wall.appendChild(createWallItem(post, globalIndex));
-    });
+    firstBatch.forEach(appendWallItem);
     state.renderedCount = firstBatch.length;
 
-    if (state.renderedCount >= state.collection.length) {
+    if (state.renderedCount >= state.total) {
         status.textContent = 'Fim das publicações.';
         return;
     }
@@ -401,8 +444,8 @@ function initProgressiveFeed() {
 }
 
 /* -------------------------------------
-   7. LIGHTBOX
-------------------------------------- */
+   8. LIGHTBOX
+   ------------------------------------- */
 
 function renderLightboxItem() {
     const item = state.collection[state.lightboxIndex];
@@ -555,16 +598,40 @@ function initLightbox() {
 }
 
 /* -------------------------------------
-   8. INICIALIZAÇÃO
-------------------------------------- */
+   9. INICIALIZAÇÃO
+   ------------------------------------- */
 
-function init() {
+async function init() {
+    try {
+        await loadInitialData();
+        console.info('[feed] dados carregados da API:', API_BASE);
+    } catch (err) {
+        console.warn('[feed] API indisponível, usando dados simulados.', err);
+        useSimulatedFallback();
+    }
+
     renderFeatured();
     renderHero();
-    initProgressiveFeed();
+    renderInitialWall();
     initLightbox();
 }
 
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
     document.addEventListener('DOMContentLoaded', init);
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        API_BASE,
+        SIMULATED_ARTIST,
+        SIMULATED_PUBLICATIONS,
+        state,
+        loadArtist,
+        loadFeatured,
+        loadFeedBatch,
+        loadInitialData,
+        useSimulatedFallback,
+        computeIndicatorWindow,
+        formatDateISO,
+    };
 }

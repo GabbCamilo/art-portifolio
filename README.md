@@ -87,9 +87,9 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 04: Backend (API REST Express + MySQL, CRUD admin com token, testada localmente).
+Em desenvolvimento — Etapa 05: Integração full stack (frontend consumindo a API REST via fetch, com fallback simulado).
 
 - Produção (frontend): https://frontend-nine-taupe-63.vercel.app
 - Admin: https://frontend-nine-taupe-63.vercel.app/admin/login
 - API local: http://localhost:3000/api/health
-- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`
+- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`, `docs/ETAPA-05-FULLSTACK.md`
