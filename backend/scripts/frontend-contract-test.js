@@ -3,6 +3,10 @@ const m = require('../../frontend/js/main.js');
 (async () => {
     const artist = await m.loadArtist();
     console.log('artist:', artist.name, '|', artist.location);
+    console.log('labels:', JSON.stringify(artist.labels));
+    console.log('topics:', artist.topics.length, 'itens');
+    if (typeof artist.labels !== 'object' || Array.isArray(artist.labels)) throw new Error('labels deve ser objeto');
+    if (!Array.isArray(artist.topics)) throw new Error('topics deve ser array');
 
     const feat = await m.loadFeatured();
     console.log('featured:', feat.id, '|', feat.title, '| featured =', feat.featured);

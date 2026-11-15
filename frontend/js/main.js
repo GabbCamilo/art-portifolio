@@ -11,6 +11,15 @@
    1. DADOS SIMULADOS (fallback offline)
    ------------------------------------- */
 
+const DEFAULT_LABELS = {
+    artist: 'Artist',
+    location: 'Location',
+    medium: 'Medium',
+    website: 'Website',
+    store: 'Store',
+    patreon: 'Patreon',
+};
+
 const SIMULATED_ARTIST = {
     name: 'Kenyureru',
     location: 'São Paulo, Brasil',
@@ -18,6 +27,8 @@ const SIMULATED_ARTIST = {
     website: 'https://exemplo.com',
     store: 'N/A',
     patreon: 'N/A',
+    labels: DEFAULT_LABELS,
+    topics: [],
 };
 
 const SIMULATED_PUBLICATIONS = [
@@ -207,7 +218,19 @@ async function apiFetch(path) {
 }
 
 async function loadArtist() {
-    return apiFetch('/artist');
+    const data = await apiFetch('/artist');
+    state.artist = {
+        id: data.id,
+        name: data.name,
+        location: data.location,
+        medium: data.medium,
+        website: data.website,
+        store: data.store,
+        patreon: data.patreon,
+        labels: data.labels || {},
+        topics: Array.isArray(data.topics) ? data.topics : [],
+    };
+    return state.artist;
 }
 
 async function loadFeatured() {
@@ -332,11 +355,39 @@ function renderHero() {
     document.getElementById('detail-patreon').textContent = artist.patreon;
     document.getElementById('hero-description').textContent = featured.description;
     document.getElementById('hero-complementary').textContent = featured.complementary;
+
+    const labels = state.artist.labels || {};
+    document.querySelectorAll('dt[data-label-for]').forEach(el => {
+        el.textContent = labels[el.dataset.labelFor] || DEFAULT_LABELS[el.dataset.labelFor] || '';
+    });
+    renderTopics(state.artist.topics);
 }
 
-/* -------------------------------------
-   7. MURO DE FOTOS — GRADE FLUIDA
-   ------------------------------------- */
+function renderTopics(topics) {
+    const container = document.getElementById('hero-topics');
+    if (!container) return;
+
+    container.innerHTML = '';
+    (topics || [])
+        .slice()
+        .sort((a, b) => (a.position || 0) - (b.position || 0))
+        .forEach(topic => {
+            const box = document.createElement('div');
+            box.className = 'hero-topic';
+
+            const title = document.createElement('h4');
+            title.className = 'hero-topic-title';
+            title.textContent = topic.title;
+
+            const body = document.createElement('p');
+            body.className = 'hero-topic-body';
+            body.textContent = topic.body;
+
+            box.appendChild(title);
+            box.appendChild(body);
+            container.appendChild(box);
+        });
+}
 
 function createWallItem(post, globalIndex) {
     const button = document.createElement('button');

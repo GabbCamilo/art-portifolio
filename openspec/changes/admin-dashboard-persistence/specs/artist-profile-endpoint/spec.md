@@ -11,7 +11,11 @@ O sistema SHALL expor `GET /api/artist` retornando o perfil único do artista ar
 
 #### Scenario: Perfil retornado com sucesso
 - **WHEN** o cliente faz `GET /api/artist`
-- **THEN** a resposta é 200 com JSON contendo `name`, `location`, `medium`, `website`, `store`, `patreon` e `topics`
+- **THEN** a resposta é 200 com JSON contendo `name`, `location`, `medium`, `website`, `store`, `patreon`, `labels` e `topics`
+
+#### Scenario: Labels e topics retornados
+- **WHEN** o cliente faz `GET /api/artist`
+- **THEN** a resposta é 200 com `labels` (objeto) e `topics` (lista ordenada por posição)
 
 #### Scenario: Perfil sempre existe
 - **WHEN** a tabela `artist_profile` contém a linha única id=1
@@ -26,6 +30,6 @@ O sistema SHALL expor `PUT /api/admin/artist` (sessão ativa) atualizando os cam
 - **WHEN** o cliente faz `PUT /api/admin/artist` com `{ "name": "Novo nome" }`
 - **THEN** a resposta é 200 com o perfil atualizado
 
-#### Scenario: Campo inválido
-- **WHEN** o cliente envia `name` não-string
+#### Scenario: Labels inválidas
+- **WHEN** o cliente envia `labels` que não é objeto
 - **THEN** a resposta é 400

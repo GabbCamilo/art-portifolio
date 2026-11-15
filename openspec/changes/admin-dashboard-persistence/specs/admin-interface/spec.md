@@ -43,3 +43,20 @@ O sistema SHALL permitir adicionar, remover, reordenar e selecionar uma publica�
 #### Scenario: Remover
 - **WHEN** o administrador clica em "Remover"
 - **THEN** a publicação é excluída via API e o cartão some da galeria
+
+## ADDED Requirements
+
+### Requirement: Detalhes editáveis do muro
+O sistema SHALL permitir editar rótulos e valores dos campos fixos do Details e adicionar, editar e remover caixas de texto com título e descrição.
+
+#### Scenario: Rótulo editável
+- **WHEN** o administrador clica no rótulo de um campo fixo
+- **THEN** o rótulo entra em modo de edição e aceita novo texto
+
+#### Scenario: Caixa de texto adicionada
+- **WHEN** o administrador clica em "Adicionar caixa de texto"
+- **THEN** uma nova caixa vazia aparece para editar título e corpo
+
+#### Scenario: Caixa de texto removida
+- **WHEN** o administrador clica em remover uma caixa de texto
+- **THEN** a caixa é excluída via API e desaparece da lista

@@ -49,23 +49,33 @@
 
                         <dl class="details-list">
                             <div class="details-row">
-                                <dt>Artist</dt>
-                                <dd data-editable>Artista Simulado</dd>
+                                <dt data-editable data-label-for="artist">Artist</dt>
+                                <dd data-editable data-field="name">Kenyureru</dd>
                             </div>
 
                             <div class="details-row">
-                                <dt>Location</dt>
-                                <dd data-editable>São Paulo, Brasil</dd>
+                                <dt data-editable data-label-for="location">Location</dt>
+                                <dd data-editable data-field="location">São Paulo, Brasil</dd>
                             </div>
 
                             <div class="details-row">
-                                <dt>Medium</dt>
-                                <dd data-editable>Digital</dd>
+                                <dt data-editable data-label-for="medium">Medium</dt>
+                                <dd data-editable data-field="medium">Digital</dd>
                             </div>
 
                             <div class="details-row">
-                                <dt>Website</dt>
-                                <dd data-editable>https://exemplo.com</dd>
+                                <dt data-editable data-label-for="website">Website</dt>
+                                <dd data-editable data-field="website">https://exemplo.com</dd>
+                            </div>
+
+                            <div class="details-row">
+                                <dt data-editable data-label-for="store">Store</dt>
+                                <dd data-editable data-field="store">N/A</dd>
+                            </div>
+
+                            <div class="details-row">
+                                <dt data-editable data-label-for="patreon">Patreon</dt>
+                                <dd data-editable data-field="patreon">N/A</dd>
                             </div>
                         </dl>
 
@@ -73,9 +83,14 @@
                             Descrição da obra principal selecionada pelo proprietário.
                         </p>
 
-                        <p class="details-complementary" data-editable>
+                        <p class="details-complementary" data-editable data-multiline data-field="complementary">
                             Informações complementares sobre técnica, dimensões e ano.
                         </p>
+                        <div class="topics-section">
+                            <h3 class="details-title">Caixas de texto</h3>
+                            <div class="topics-list" id="topics-list"></div>
+                            <button type="button" class="button-primary" id="btn-add-topic">Adicionar caixa de texto</button>
+                        </div>
                     </div>
                 </div>
             </div>

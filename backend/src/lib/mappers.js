@@ -17,4 +17,26 @@ function mapPublication(row) {
     };
 }
 
-module.exports = { mapPublication };
+module.exports = { mapPublication, mapArtist, mapTopic };
+
+function mapArtist(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        location: row.location,
+        medium: row.medium,
+        website: row.website,
+        store: row.store,
+        patreon: row.patreon,
+        labels: (typeof row.labels === 'string' ? JSON.parse(row.labels || '{}') : row.labels) || {},
+    };
+}
+
+function mapTopic(row) {
+    return {
+        id: row.id,
+        title: row.title,
+        body: row.body,
+        position: row.position,
+    };
+}

@@ -47,3 +47,7 @@ INSERT INTO publications (title, description, complementary, published_at, featu
  'Estudo final de dia ao entardecer.',
  '',
  '2025-09-28', 0, 'ultima-luz.jpg', '1,6 MB', 1400, 900);
+
+INSERT INTO profile_topics (title, body, position) VALUES
+('Técnica', 'Digital no iPad Pro com Apple Pencil, 2026.', 1),
+('Inspiração', 'Luz da cidade ao entardecer e carvão sobre papel.', 2);

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS artist_profile (
     website VARCHAR(255) NOT NULL,
     store VARCHAR(255) NOT NULL,
     patreon VARCHAR(255) NOT NULL,
+    labels JSON NOT NULL DEFAULT ('{}'),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_artist_profile_single_row CHECK (id = 1)
@@ -60,3 +61,18 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
     CONSTRAINT fk_admin_sessions_admin FOREIGN KEY (admin_id)
         REFERENCES admin_users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Etapa 08 — tópicos customizados do Details e rótulos editáveis
+CREATE TABLE IF NOT EXISTS profile_topics (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(160) NOT NULL,
+    body TEXT NOT NULL,
+    position INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_profile_topics_position (position)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Para bases existentes da Etapa 03, aplicar como root:
+-- ALTER TABLE artist_profile ADD COLUMN labels JSON NOT NULL DEFAULT ('{}') AFTER patreon;

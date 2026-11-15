@@ -5,6 +5,7 @@ require('dotenv').config();
 const artistRoutes = require('./routes/artist');
 const publicationsRoutes = require('./routes/publications');
 const adminRoutes = require('./routes/admin');
+const topicsRoutes = require('./routes/topics');
 const authRoutes = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -22,6 +23,7 @@ app.use('/api', authRoutes);
 app.use('/api', artistRoutes);
 app.use('/api', publicationsRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', topicsRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });

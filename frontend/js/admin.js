@@ -11,6 +11,19 @@
 
     var API_BASE = 'http://localhost:3000/api';
     var TOKEN_KEY = 'artfolio_admin_token';
+    var LABEL_FIELDS = ['name', 'location', 'medium', 'website', 'store', 'patreon'];
+
+    function apiAuth(path, opts) {
+        var options = opts || {};
+        options.headers = options.headers || {};
+        if (!options.headers.Authorization) {
+            var token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                options.headers.Authorization = 'Bearer ' + token;
+            }
+        }
+        return fetch(API_BASE + path, options);
+    }
 
     /* -------------------------------------
        1. LOGIN (API REAL)
@@ -255,7 +268,10 @@
        4. CAMPOS EDITÁVEIS TRANSLÚCIDOS
     ------------------------------------- */
 
-    function makeEditable(element) {
+    function makeEditable(element, options) {
+        var multiline = options && options.multiline;
+        var onSave = options && options.onSave;
+
         element.addEventListener('click', function () {
             if (element.classList.contains('is-editing')) return;
 
@@ -263,20 +279,32 @@
             element.classList.add('is-editing');
             element.textContent = '';
 
-            var input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'edit-input';
+            var input = multiline ? document.createElement('textarea') : document.createElement('input');
+            if (!multiline) {
+                input.type = 'text';
+            }
+            input.className = multiline ? 'edit-textarea' : 'edit-input';
             input.value = current;
             element.appendChild(input);
             input.focus();
+            if (multiline) {
+                input.style.height = 'auto';
+                input.style.height = input.scrollHeight + 'px';
+            }
 
             function save() {
-                element.textContent = input.value.trim() || current;
+                var next = input.value.trim() || current;
+                element.textContent = next;
                 element.classList.remove('is-editing');
+                if (onSave) {
+                    onSave(next);
+                }
             }
 
             input.addEventListener('keydown', function (event) {
                 if (event.key === 'Enter') {
+                    if (multiline && event.shiftKey) return;
+                    event.preventDefault();
                     save();
                 }
                 if (event.key === 'Escape') {
@@ -286,6 +314,13 @@
             });
 
             input.addEventListener('blur', save);
+
+            if (multiline) {
+                input.addEventListener('input', function () {
+                    input.style.height = 'auto';
+                    input.style.height = input.scrollHeight + 'px';
+                });
+            }
         });
     }
 
@@ -451,13 +486,197 @@
             });
         }
 
-        /* Campos editáveis da apresentação */
-        document.querySelectorAll('[data-editable]').forEach(makeEditable);
+        loadPresentation().catch(function (err) {
+            console.warn('[admin] apresentação via API indisponível:', err.message);
+        });
+
+        wireEditables();
+    }
+
+    function wireEditables() {
+        document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
+            makeEditable(el, { onSave: saveArtist });
+        });
+        document.querySelectorAll('dd[data-field]').forEach(function (el) {
+            makeEditable(el, { onSave: saveArtist });
+        });
+        document.querySelectorAll('.details-description[data-field="description"], .details-complementary[data-field="complementary"]').forEach(function (el) {
+            makeEditable(el, { multiline: true, onSave: saveFeatured });
+        });
     }
 
     /* -------------------------------------
+       7. APRESENTAÇÃO VIA API
+       ------------------------------------- */
+
+    function applyArtist(artist) {
+        document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
+            el.textContent = artist.labels[el.dataset.labelFor] || '';
+        });
+        document.querySelectorAll('dd[data-field]').forEach(function (el) {
+            el.textContent = artist[el.dataset.field] || '';
+        });
+    }
+
+    function collectArtist() {
+        var labels = {};
+        var fields = {};
+        document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
+            labels[el.dataset.labelFor] = el.textContent;
+        });
+        document.querySelectorAll('dd[data-field]').forEach(function (el) {
+            fields[el.dataset.field] = el.textContent;
+        });
+        return Object.assign({}, fields, { labels: labels });
+    }
+
+    var artistSaveTimer = null;
+    function doSaveArtist() {
+        return apiAuth('/admin/artist', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collectArtist())
+        }).then(function (res) {
+            if (!res.ok) throw new Error('Falha ao salvar perfil');
+            return res.json();
+        }).then(applyArtist);
+    }
+    function saveArtist() {
+        if (artistSaveTimer) clearTimeout(artistSaveTimer);
+        artistSaveTimer = setTimeout(function () {
+            doSaveArtist().catch(function (e) {
+                console.warn('[admin] perfil:', e.message);
+            });
+        }, 250);
+    }
+
+    var featuredId = null;
+    var featuredData = null;
+    function loadFeatured() {
+        return apiFetch('/publications?featured=true').then(function (data) {
+            var item = data && data.items && data.items[0];
+            if (!item) return;
+            featuredId = item.db_id;
+            featuredData = item;
+            document.querySelector('.details-description[data-field="description"]').textContent = item.description || '';
+            document.querySelector('.details-complementary[data-field="complementary"]').textContent = item.complementary || '';
+        });
+    }
+    function saveFeatured() {
+        var descEl = document.querySelector('.details-description[data-field="description"]');
+        var compEl = document.querySelector('.details-complementary[data-field="complementary"]');
+        var body = Object.assign({}, featuredData, {
+            description: descEl.textContent,
+            complementary: compEl.textContent
+        });
+        return apiAuth('/admin/publications/' + featuredId, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        }).then(function (res) {
+            if (!res.ok) throw new Error('Falha ao salvar apresentação');
+        });
+    }
+    var featuredSaveTimer = null;
+    function saveFeatured() {
+        if (featuredSaveTimer) clearTimeout(featuredSaveTimer);
+        featuredSaveTimer = setTimeout(function () {
+            saveFeatured().catch(function (e) {
+                console.warn('[admin] apresentação:', e.message);
+            });
+        }, 250);
+    }
+
+    function loadPresentation() {
+        return apiFetch('/artist').then(function (artist) {
+            applyArtist(artist);
+            renderTopics(artist.topics || []);
+            return loadFeatured();
+        });
+    }
+
+    function renderTopics(topics) {
+        var list = document.getElementById('topics-list');
+        if (!list) return;
+        list.innerHTML = '';
+        (topics || []).slice().sort(function (a, b) { return (a.position || 0) - (b.position || 0); }).forEach(appendTopic);
+    }
+
+    function appendTopic(topic) {
+        var list = document.getElementById('topics-list');
+        var article = document.createElement('article');
+        article.className = 'topic-box';
+        article.setAttribute('data-topic-id', topic.id);
+
+        var title = document.createElement('input');
+        title.type = 'text';
+        title.className = 'edit-input';
+        title.value = topic.title;
+        title.setAttribute('data-topic-id', topic.id);
+        title.setAttribute('data-topic-field', 'title');
+
+        var body = document.createElement('textarea');
+        body.className = 'edit-textarea';
+        body.value = topic.body;
+        body.setAttribute('data-topic-id', topic.id);
+        body.setAttribute('data-topic-field', 'body');
+
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'topic-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', 'Remover caixa de texto');
+
+        article.appendChild(title);
+        article.appendChild(body);
+        article.appendChild(remove);
+        list.appendChild(article);
+
+        makeEditable(title, { onSave: function (v) { saveTopic(topic.id, 'title', v); } });
+        makeEditable(body, { multiline: true, onSave: function (v) { saveTopic(topic.id, 'body', v); } });
+
+        remove.addEventListener('click', function () {
+            apiAuth('/admin/topics/' + topic.id, { method: 'DELETE' }).then(function () {
+                article.remove();
+            }).catch(function (e) {
+                console.warn('[admin] remover tópico:', e.message);
+            });
+        });
+    }
+
+    function saveTopic(id, field, value) {
+        var payload = {};
+        payload[field] = value;
+        return apiAuth('/admin/topics/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(function (res) {
+            if (!res.ok) throw new Error('Falha ao salvar tópico');
+        });
+    }
+
+    document.getElementById('btn-add-topic').addEventListener('click', function () {
+        apiAuth('/admin/topics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: '', body: '' })
+        }).then(function (res) {
+            if (!res.ok) throw new Error('Falha ao criar tópico');
+            return res.json();
+        }).then(function (topic) {
+            appendTopic(topic);
+            var list = document.getElementById('topics-list');
+            var last = list.lastElementChild;
+            if (last) last.querySelector('input').focus();
+        }).catch(function (e) {
+            console.warn('[admin] adicionar tópico:', e.message);
+        });
+    });
+
+    /* -------------------------------------
        6. INICIALIZAÇÃO
-    ------------------------------------- */
+       ------------------------------------- */
 
     function init() {
         initLogin();

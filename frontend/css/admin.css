@@ -233,10 +233,73 @@
     width: 100%;
     font: inherit;
     padding: var(--space-1);
-    border: 1px solid var(--color-text);
+    border: 1px solid rgba(41, 35, 35, 0.35);
     border-radius: var(--radius);
     background: var(--color-white);
     color: var(--color-text);
+}
+
+.edit-textarea {
+    width: 100%;
+    font: inherit;
+    padding: var(--space-1);
+    border: 1px solid rgba(41, 35, 35, 0.35);
+    border-radius: var(--radius);
+    background: var(--color-white);
+    color: var(--color-text);
+    resize: vertical;
+    min-height: 4rem;
+}
+
+/* Caixas de texto do Details */
+
+.topics-section {
+    margin-top: var(--space-4);
+}
+
+.topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.topic-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+}
+
+.topic-box input.title,
+.topic-box textarea.body {
+    width: 100%;
+    font: inherit;
+    padding: var(--space-1);
+    border: 1px solid rgba(41, 35, 35, 0.35);
+    border-radius: var(--radius);
+    background: var(--color-white);
+    color: var(--color-text);
+}
+
+.topic-box textarea.body {
+    min-height: 5rem;
+}
+
+.topic-remove {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text);
+    opacity: 0.5;
+    padding: 0;
+    border-radius: var(--radius);
+}
+
+.topic-remove:hover,
+.topic-remove:focus-visible {
+    opacity: 1;
+    background-color: var(--color-background);
 }
 
 /* Cartões da galeria administrativa */
