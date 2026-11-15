@@ -87,9 +87,10 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 05: Integração full stack (frontend consumindo a API REST via fetch, com fallback simulado).
+Em desenvolvimento — Etapa 06: Processamento de imagens (Python + FastAPI + Pillow, variantes WebP 400/800/1600 px testadas localmente).
 
 - Produção (frontend): https://frontend-nine-taupe-63.vercel.app
 - Admin: https://frontend-nine-taupe-63.vercel.app/admin/login
 - API local: http://localhost:3000/api/health
-- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`, `docs/ETAPA-05-FULLSTACK.md`
+- Image-service local: http://127.0.0.1:8000/health
+- Relatórios: `docs/ETAPA-03-DATABASE-DEPLOY.md`, `docs/ETAPA-04-BACKEND.md`, `docs/ETAPA-05-FULLSTACK.md`, `docs/ETAPA-06-IMAGES.md`

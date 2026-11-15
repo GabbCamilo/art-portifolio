@@ -16,6 +16,12 @@ __pycache__/
 venv/
 env/
 
+# Conteúdo gerado de storage (originais e variantes não versionados)
+storage/images/*
+storage/processed/*
+!storage/images/.gitkeep
+!storage/processed/.gitkeep
+
 # Logs e arquivos temporários
 *.log
 tmp/
