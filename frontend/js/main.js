@@ -177,7 +177,8 @@ const publications = [
 
 const BATCH_INITIAL = 6;
 const BATCH_NEXT = 4;
-const INDICATOR_RADIUS = 3;
+const INDICATOR_COUNT = 5;
+const PREV_CLICK_ZONE_RATIO = 0.25;
 
 const state = {
     renderedCount: 0,
@@ -215,10 +216,13 @@ function formatDateISO(isoDate) {
     });
 }
 
-function computeIndicatorWindow(current, total, radius) {
-    const start = Math.max(0, current - radius);
-    const end = Math.min(total - 1, current + radius);
-    return { start, end };
+function computeIndicatorWindow(current, total) {
+    const count = Math.min(INDICATOR_COUNT, total);
+    const half = Math.floor(count / 2);
+    let start = current - half;
+    if (start < 0) start = 0;
+    if (start + count > total) start = total - count;
+    return { start, end: start + count - 1 };
 }
 
 function svgPlaceholder(width, height, tone, label) {
@@ -422,12 +426,24 @@ function renderIndicators() {
     container.innerHTML = '';
     const total = state.collection.length;
     const current = state.lightboxIndex;
-    const windowRange = computeIndicatorWindow(current, total, INDICATOR_RADIUS);
+    const windowRange = computeIndicatorWindow(current, total);
 
     for (let i = windowRange.start; i <= windowRange.end; i += 1) {
         const dot = document.createElement('button');
         dot.type = 'button';
-        dot.className = 'indicator' + (i === current ? ' current' : '');
+
+        let className = 'indicator';
+        if (i === current) {
+            className += ' current';
+        }
+        if (i === windowRange.start && windowRange.start > 0) {
+            className += ' half';
+        }
+        if (i === windowRange.end && windowRange.end < total - 1) {
+            className += ' half-end';
+        }
+
+        dot.className = className;
         dot.setAttribute('role', 'tab');
         dot.setAttribute('aria-label', `Ir para a obra ${i + 1} de ${total}`);
         if (i === current) {
@@ -528,8 +544,12 @@ function initLightbox() {
     document.getElementById('lightbox-next').addEventListener('click', () => stepLightbox(1));
 
     lightbox.addEventListener('click', event => {
-        if (event.target === lightbox || event.target.classList.contains('lightbox-stage')) {
-            closeLightbox();
+        if (event.target.closest('button')) return;
+
+        if (event.clientX < window.innerWidth * PREV_CLICK_ZONE_RATIO) {
+            stepLightbox(-1);
+        } else {
+            stepLightbox(1);
         }
     });
 }

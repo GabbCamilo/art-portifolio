@@ -87,4 +87,8 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 02: Frontend (página única, galeria progressiva, lightbox e área administrativa visual).
+Em desenvolvimento — Etapa 03: Banco de dados e deploy (MySQL `art_portfolio` populado, usuário `art_portfolio_app` com CRUD, frontend estático publicado no Vercel).
+
+- Produção: https://frontend-nine-taupe-63.vercel.app
+- Admin: https://frontend-nine-taupe-63.vercel.app/admin/login
+- Relatório: `docs/ETAPA-03-DATABASE-DEPLOY.md`

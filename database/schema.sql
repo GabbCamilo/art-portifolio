@@ -1,0 +1,40 @@
+-- Etapa 03 — Esquema do banco art_portfolio (MySQL 8)
+-- Execucao: mysql -u root -p < database/schema.sql
+
+CREATE DATABASE IF NOT EXISTS art_portfolio
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE art_portfolio;
+
+CREATE TABLE IF NOT EXISTS artist_profile (
+    id TINYINT UNSIGNED NOT NULL PRIMARY KEY DEFAULT 1,
+    name VARCHAR(120) NOT NULL,
+    location VARCHAR(120) NOT NULL,
+    medium VARCHAR(120) NOT NULL,
+    website VARCHAR(255) NOT NULL,
+    store VARCHAR(255) NOT NULL,
+    patreon VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_artist_profile_single_row CHECK (id = 1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS publications (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(160) NOT NULL,
+    description TEXT NOT NULL,
+    complementary TEXT NOT NULL,
+    published_at DATE NOT NULL,
+    featured TINYINT(1) NOT NULL DEFAULT 0,
+    file_name VARCHAR(255) NOT NULL,
+    file_size VARCHAR(32) NOT NULL,
+    width SMALLINT UNSIGNED NOT NULL,
+    height SMALLINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_publications_file_name (file_name),
+    KEY idx_publications_featured (featured),
+    KEY idx_publications_published_at (published_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -20,8 +20,8 @@
 - [x] 3.2 Renderização da apresentação principal — verificar `renderPresentation()` preenchendo artista, localização, mídia, website
 - [x] 3.3 Carregamento progressivo com lote inicial de 6 e lotes de 4 — verificar `renderNextBatch()` e `initProgressiveFeed()`
 - [x] 3.4 Lightbox aberto em índice correto da coleção — verificar `openLightbox(index)` e `state.lightboxIndex`
-- [x] 3.5 Indicadores de posição com janela ±3 — verificar `computeIndicatorWindow` e `renderIndicators()`
-- [x] 3.6 Fechamento por Escape, setas teclado e clique fora da imagem — verificar `onLightboxKeydown` e listener de clique no overlay
+- [x] 3.5 Indicadores de posição com janela fixa de 5 unidades e pontas divididas em translúcido — verificar `computeIndicatorWindow` com `INDICATOR_COUNT` e `renderIndicators()`
+- [x] 3.6 Fechamento por Escape e setas de teclado; navegação por zonas de clique (25% anterior / 75% seguinte) — verificar `onLightboxKeydown` e listener de clique em `initLightbox`
 - [x] 3.7 Trava e restauração de foco — verificar `trapLightboxFocus` e `closeLightbox`
 
 ## 4. Área administrativa visual
@@ -48,7 +48,13 @@
 - [x] 6.5 Imagem de destaque do header sem tooltip/legenda — verificar ausência de `.media-caption` em `.featured-artwork` e ausência de `#featured-name` em `main.js`
 - [x] 6.6 Barra de nome do arquivo na base das imagens do muro, texto centralizado, mesmo fundo do flash de hover (`--wall-flash-bg`), sem contorno de borda — verificar `.wall-tooltip` e `.wall-item::after` com `background: var(--wall-flash-bg)`
 - [x] 6.7 Publicação em destaque excluída do muro — verificar `state.collection = getChronological()` em `initProgressiveFeed()`
-- [x] 6.8 Lightbox com setas translúcidas laterais e carrossel de indicadores ±3 — verificar `.lightbox-arrow` e `renderIndicators()`
+- [x] 6.8 Lightbox com setas translúcidas laterais e indicadores fixos de 5 unidades (pontas divididas em translúcido) — verificar `.lightbox-arrow` e `renderIndicators()`
+
+## 7. Indicadores fixos de 5 unidades e zonas de clique (ajuste do lightbox)
+
+- [x] 7.1 Fileira fixa de 5 indicadores centralizada na obra atual, sem crescimento/encolhimento por posição — verificar INDICATOR_COUNT e computeIndicatorWindow
+- [x] 7.2 Pontas da fileira com círculo dividido ao meio em translúcido enquanto houver obras além daquele lado; na ponta real da coleção o círculo respectivo fica destacado — verificar classes .half e .half-end em renderIndicators()
+- [x] 7.3 Zonas de clique no estado de lightbox: 25% esquerdo = obra anterior, 75% restante = obra seguinte, dispensando as setas — verificar PREV_CLICK_ZONE_RATIO e listener em initLightbox
 
 ## Workflow follow-up
 

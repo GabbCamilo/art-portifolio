@@ -40,6 +40,11 @@ Restrições:
 10. **Barra de nome na base do muro** — o nome do arquivo aparece sempre em uma barra translúcida na base de cada imagem, texto centralizado, com o mesmo fundo do flash de hover (`--wall-flash-bg`), sem contorno de borda. A imagem de destaque do header permanece sem legenda. Alternativa rejeitada: pílula central no meio da imagem, que sobrepunha o nome da obra.
 11. **Destaque fora do muro** — `initProgressiveFeed()` usa `getChronological()`; o destaque permanece no header/hero e não se repete na grade.
 
+### Ajuste do lightbox (indicadores fixos e zonas de clique)
+
+12. **Fileira fixa de 5 indicadores** — a janela é sempre de 5 círculos centralizados na obra atual (`INDICATOR_COUNT`), sem crescer para ±3 nem encolher nas pontas. As pontas da fileira recebem semicírculo translúcido com anel fino (metade preenchida em translúcido, metade vazia) enquanto houver obras além daquele lado; ao chegar na ponta real da coleção, o círculo respectivo perde a divisão e o estado atual se destaca em branco. Alternativa rejeitada: janela ±3 dinâmica (7→4 círculos), que mudava de tamanho conforme a posição.
+13. **Zonas de clique 25%/75%** — no estado de visualização ampliada, clicar nos 25% à esquerda da tela vai para a obra anterior e nos 75% restantes vai para a seguinte, dispensando as setas. O fechamento passa a ser apenas pelo botão × ou Escape; o antigo "clique fora fecha" foi removido para não conflitar com as zonas de navegação. Botões (setas, ×, indicadores) são ignorados pelo handler de zonas via `closest('button')`.
+
 ## Risks / Trade-offs
 
 - [Fontes externas] `@import` exige internet; em uso offline cai para sans-serif genérico. → Mitigação: stacks de fallback em `:root`.
