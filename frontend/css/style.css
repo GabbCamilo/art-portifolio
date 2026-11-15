@@ -358,6 +358,13 @@ button:focus-visible,
     overflow: hidden;
     text-overflow: ellipsis;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.wall-item:hover .wall-tooltip,
+.wall-item:focus-visible .wall-tooltip {
+    opacity: 1;
 }
 
 .feed-sentinel {
