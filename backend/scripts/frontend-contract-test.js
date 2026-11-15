@@ -1,4 +1,35 @@
+const path = require('path');
+const fs = require('fs');
 const m = require('../../frontend/js/main.js');
+
+/* --- Regressão: admin.js não pode lançar ao carregar em login.html --- */
+const nullEl = () => null;
+global.document = {
+    getElementById: nullEl,
+    querySelector: nullEl,
+    querySelectorAll: () => [],
+    addEventListener: () => {},
+    dispatchEvent: () => {},
+    createElement: () => ({
+        style: {},
+        classList: { add() {}, remove() {}, contains() { return false; } },
+        setAttribute() {},
+        appendChild() {},
+        addEventListener() {}
+    }),
+    body: { addEventListener() {} }
+};
+global.window = { location: { href: '' } };
+global.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
+global.Event = function () {};
+const originalFetch = global.fetch;
+global.fetch = () => Promise.reject(new Error('sem rede no teste de regressão'));
+
+const adminSrc = fs.readFileSync(path.resolve(__dirname, '../../frontend/js/admin.js'), 'utf8');
+new Function(adminSrc)(); // executa o IIFE; erro de top level lançaria aqui
+document.dispatchEvent(new Event('DOMContentLoaded'));
+console.log('admin.js carregado e inicializado sem erros (cenario login.html simulado)');
+global.fetch = originalFetch;
 
 (async () => {
     const artist = await m.loadArtist();

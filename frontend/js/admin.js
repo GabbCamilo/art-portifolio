@@ -25,6 +25,19 @@
         return fetch(API_BASE + path, options);
     }
 
+    function apiFetch(path, opts) {
+        var options = opts || {};
+        options.headers = options.headers || {};
+        var token = localStorage.getItem(TOKEN_KEY);
+        if (token) {
+            options.headers.Authorization = 'Bearer ' + token;
+        }
+        return fetch(API_BASE + path, options).then(function (res) {
+            if (!res.ok) throw new Error('Requisição falhou: ' + res.status);
+            return res.json();
+        });
+    }
+
     /* -------------------------------------
        1. LOGIN (API REAL)
     ------------------------------------- */
@@ -491,6 +504,7 @@
         });
 
         wireEditables();
+        wireTopics();
     }
 
     function wireEditables() {
@@ -511,7 +525,7 @@
 
     function applyArtist(artist) {
         document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
-            el.textContent = artist.labels[el.dataset.labelFor] || '';
+            el.textContent = (artist.labels || {})[el.dataset.labelFor] || '';
         });
         document.querySelectorAll('dd[data-field]').forEach(function (el) {
             el.textContent = artist[el.dataset.field] || '';
@@ -562,13 +576,15 @@
             document.querySelector('.details-complementary[data-field="complementary"]').textContent = item.complementary || '';
         });
     }
-    function saveFeatured() {
+    function saveFeaturedNow() {
         var descEl = document.querySelector('.details-description[data-field="description"]');
         var compEl = document.querySelector('.details-complementary[data-field="complementary"]');
+        if (!descEl || !compEl) return Promise.resolve();
         var body = Object.assign({}, featuredData, {
             description: descEl.textContent,
             complementary: compEl.textContent
         });
+        if (!featuredId) return Promise.reject(new Error('Publicação principal não identificada'));
         return apiAuth('/admin/publications/' + featuredId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -581,7 +597,7 @@
     function saveFeatured() {
         if (featuredSaveTimer) clearTimeout(featuredSaveTimer);
         featuredSaveTimer = setTimeout(function () {
-            saveFeatured().catch(function (e) {
+            saveFeaturedNow().catch(function (e) {
                 console.warn('[admin] apresentação:', e.message);
             });
         }, 250);
@@ -656,23 +672,27 @@
         });
     }
 
-    document.getElementById('btn-add-topic').addEventListener('click', function () {
-        apiAuth('/admin/topics', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: '', body: '' })
-        }).then(function (res) {
-            if (!res.ok) throw new Error('Falha ao criar tópico');
-            return res.json();
-        }).then(function (topic) {
-            appendTopic(topic);
-            var list = document.getElementById('topics-list');
-            var last = list.lastElementChild;
-            if (last) last.querySelector('input').focus();
-        }).catch(function (e) {
-            console.warn('[admin] adicionar tópico:', e.message);
+    function wireTopics() {
+        var btn = document.getElementById('btn-add-topic');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            apiAuth('/admin/topics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: '', body: '' })
+            }).then(function (res) {
+                if (!res.ok) throw new Error('Falha ao criar tópico');
+                return res.json();
+            }).then(function (topic) {
+                appendTopic(topic);
+                var list = document.getElementById('topics-list');
+                var last = list.lastElementChild;
+                if (last) last.querySelector('input').focus();
+            }).catch(function (e) {
+                console.warn('[admin] adicionar tópico:', e.message);
+            });
         });
-    });
+    }
 
     /* -------------------------------------
        6. INICIALIZAÇÃO
