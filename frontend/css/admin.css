@@ -241,6 +241,12 @@
 
 /* Cartões da galeria administrativa */
 
+.admin-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-3);
+}
+
 .admin-gallery .post {
     position: relative;
     padding: var(--space-2);

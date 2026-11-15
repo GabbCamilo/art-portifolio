@@ -171,6 +171,16 @@
 
     var MAX_UPLOAD_BYTES = 5 * 1024 * 1024; /* 5 MB (limite simulado) */
 
+    function placeholderSrc(width, height, label) {
+        var safeLabel = label.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        var svg =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+            '<rect width="100%" height="100%" fill="#EAD6D5"/>' +
+            '<text x="50%" y="50%" fill="#292323" font-family="sans-serif" font-size="' + Math.round(Math.min(width, height) * 0.05) + '" text-anchor="middle" dominant-baseline="middle">' + safeLabel + '</text>' +
+            '</svg>';
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    }
+
     /* -------------------------------------
        3. UPLOAD SIMULADO (PRÉ-VISUALIZAÇÃO)
     ------------------------------------- */
@@ -294,7 +304,7 @@
         frame.style.aspectRatio = post.width + ' / ' + post.height;
 
         var img = document.createElement('img');
-        img.src = '';
+        img.src = placeholderSrc(post.width, post.height, post.file_name);
         img.alt = post.title + ' — pré-visualização';
         img.width = post.width;
         img.height = post.height;
@@ -307,13 +317,6 @@
         label.textContent = 'Substituir imagem (arraste ou selecione)';
         veil.appendChild(label);
         frame.appendChild(veil);
-
-        var caption = document.createElement('p');
-        caption.className = 'media-caption';
-        var name = document.createElement('span');
-        name.className = 'caption-name';
-        name.textContent = post.file_name;
-        caption.appendChild(name);
 
         var title = document.createElement('h3');
         title.className = 'post-title';
@@ -358,7 +361,6 @@
         controls.appendChild(btnRemove);
 
         article.appendChild(frame);
-        article.appendChild(caption);
         article.appendChild(title);
         article.appendChild(description);
         article.appendChild(uploadMessage);
@@ -424,6 +426,10 @@
             mainMessage.className = 'upload-message';
             mainMessage.setAttribute('role', 'status');
             mainFrame.parentNode.insertBefore(mainMessage, mainFrame.nextSibling);
+
+            var mainPost = samplePosts.find(function (post) { return post.isMain; }) || samplePosts[0];
+            mainImg.src = placeholderSrc(mainPost.width, mainPost.height, mainPost.file_name);
+
             attachUpload(mainFrame, mainImg, mainMessage);
         }
 
