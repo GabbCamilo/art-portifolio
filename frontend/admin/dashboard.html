@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Painel administrativo do Art Portfolio.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <title>Painel — Art Portfolio</title>
+</head>
+<body class="admin-body">
+
+    <header class="site-header admin-header">
+        <div class="container header-inner">
+            <a href="../index.html" class="logo">Art Portfolio — Admin</a>
+
+            <nav aria-label="Administração">
+                <ul>
+                    <li>
+                        <a href="../index.html">Ver site</a>
+                    </li>
+
+                    <li>
+                        <a href="login.html">Sair</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="admin-toolbar" aria-label="Ações do painel">
+            <div class="container toolbar-inner">
+                <button type="button" class="button-primary" id="btn-add">Adicionar publicação</button>
+
+                <p class="toolbar-note">
+                    Painel visual simulado: edições e uploads não são persistidos nesta etapa.
+                </p>
+            </div>
+        </section>
+
+        <!-- Apresentação principal editável -->
+        <section class="admin-section" aria-labelledby="admin-presentation-title">
+            <div class="container">
+                <h2 id="admin-presentation-title">Apresentação principal</h2>
+
+                <div class="admin-grid">
+                    <div class="media-frame edit-frame" data-upload-zone>
+                        <img src="" alt="Obra principal — pré-visualização" width="1200" height="900" decoding="async">
+
+                        <div class="edit-veil">
+                            <span class="edit-label">Substituir imagem (arraste ou selecione)</span>
+                            <input type="file" accept="image/*" hidden data-file-input>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <h3 class="details-title">Details</h3>
+
+                        <dl class="details-list">
+                            <div class="details-row">
+                                <dt>Artist</dt>
+                                <dd data-editable>Artista Simulado</dd>
+                            </div>
+
+                            <div class="details-row">
+                                <dt>Location</dt>
+                                <dd data-editable>São Paulo, Brasil</dd>
+                            </div>
+
+                            <div class="details-row">
+                                <dt>Medium</dt>
+                                <dd data-editable>Digital</dd>
+                            </div>
+
+                            <div class="details-row">
+                                <dt>Website</dt>
+                                <dd data-editable>https://exemplo.com</dd>
+                            </div>
+                        </dl>
+
+                        <p class="details-description" data-editable>
+                            Descrição da obra principal selecionada pelo proprietário.
+                        </p>
+
+                        <p class="details-complementary" data-editable>
+                            Informações complementares sobre técnica, dimensões e ano.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Galeria editável -->
+        <section class="admin-section" aria-labelledby="admin-gallery-title">
+            <div class="container">
+                <h2 id="admin-gallery-title">Publicações</h2>
+
+                <div class="gallery admin-gallery" id="admin-gallery"></div>
+
+                <p class="section-note" id="admin-note">
+                    Use os controles de cada cartão para reorganizar, definir a publicação principal ou remover.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Art Portfolio. Área administrativa — estrutura visual.</p>
+        </div>
+    </footer>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>

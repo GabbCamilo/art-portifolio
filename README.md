@@ -39,6 +39,19 @@ Além de seu objetivo funcional, o desenvolvimento tem finalidade educacional, p
 art-portifolio/
 │
 ├── frontend/
+│   ├── index.html
+│   ├── admin/
+│   │   ├── login.html
+│   │   └── dashboard.html
+│   ├── css/
+│   │   ├── style.css
+│   │   └── admin.css
+│   ├── js/
+│   │   ├── main.js
+│   │   └── admin.js
+│   └── assets/
+│       └── images/
+│
 ├── backend/
 ├── image-service/
 ├── database/
@@ -74,4 +87,4 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 01: Ambiente e infraestrutura.
+Em desenvolvimento — Etapa 02: Frontend (página única, galeria progressiva, lightbox e área administrativa visual).

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfólio artístico individual: publicações, trabalhos em destaque, comissões e contato.">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Art Portfolio</title>
+</head>
+<body>
+
+    <a class="skip-link" href="#work">Ir para os trabalhos</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="admin/login.html">Kenyureru</a>
+        </div>
+
+        <div class="featured-band">
+            <div class="container">
+                <figure class="featured-artwork">
+                    <img id="featured-image" src="" alt="" width="1200" height="900" loading="eager" decoding="async">
+                    <span class="featured-fade" aria-hidden="true"></span>
+                </figure>
+            </div>
+        </div>
+
+    </header>
+
+    <main>
+
+        <!-- Hero: apresentação editorial 50/50 -->
+        <section id="hero" class="hero" aria-labelledby="hero-title">
+            <h2 id="hero-title" class="sr-only">Apresentação principal</h2>
+            <div class="container">
+                <div class="hero-split">
+                    <figure class="hero-media">
+                        <div class="media-frame hero-frame" id="hero-frame">
+                            <img id="hero-image" src="" alt="" width="800" height="1000" loading="lazy" decoding="async">
+                            <figcaption class="media-caption hero-caption">
+                                <span class="caption-name" id="hero-name"></span>
+                            </figcaption>
+                        </div>
+                    </figure>
+
+                    <div class="hero-text" id="artist-details">
+                        <h3 class="details-title">Details</h3>
+                        <dl class="details-list">
+                            <div class="details-row">
+                                <dt>Artist</dt>
+                                <dd id="detail-artist"></dd>
+                            </div>
+                            <div class="details-row">
+                                <dt>Location</dt>
+                                <dd id="detail-location"></dd>
+                            </div>
+                            <div class="details-row">
+                                <dt>Medium</dt>
+                                <dd id="detail-medium"></dd>
+                            </div>
+                            <div class="details-row">
+                                <dt>Website</dt>
+                                <dd id="detail-website"></dd>
+                            </div>
+                            <div class="details-row">
+                                <dt>Store</dt>
+                                <dd id="detail-store"></dd>
+                            </div>
+                            <div class="details-row">
+                                <dt>Patreon</dt>
+                                <dd id="detail-patreon"></dd>
+                            </div>
+                        </dl>
+                        <p class="details-description" id="hero-description"></p>
+                        <p class="details-complementary" id="hero-complementary"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Muro de fotos: grade fluida, altura uniforme -->
+        <section id="work" class="wall-section" aria-labelledby="wall-title">
+            <h2 id="wall-title" class="sr-only">Trabalhos</h2>
+            <div class="container">
+                <div class="wall" id="wall"></div>
+                <div id="feed-sentinel" class="feed-sentinel" aria-hidden="true"></div>
+                <p id="feed-status" class="feed-status" role="status" aria-live="polite"></p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Arte Portfolio. Todos os direitos reservados.</p>
+            <nav aria-label="Administração">
+                <ul>
+                    <li><a href="admin/login.html">Administração por Kenyureru</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualização da obra" hidden>
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fechar visualização">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <button type="button" class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Obra anterior">
+            <span aria-hidden="true">&#8249;</span>
+        </button>
+        <div class="lightbox-stage">
+            <img class="lightbox-image" id="lightbox-image" src="" alt="">
+            <p class="lightbox-caption">
+                <span class="caption-name" id="lightbox-name"></span>
+            </p>
+        </div>
+        <button type="button" class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Próxima obra">
+            <span aria-hidden="true">&#8250;</span>
+        </button>
+        <div class="lightbox-indicators" id="lightbox-indicators" role="tablist" aria-label="Posição na coleção"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+/* ========================================
+   ADMIN — IDENTIDADE + ZONAS EDITÁVEIS
+======================================== */
+
+/* Base compartilhada com style.css (tokens e layout) */
+
+.admin-body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+/* -------------------------------------
+   LOGIN
+------------------------------------- */
+
+.admin-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 24rem;
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+
+.login-brand {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-3);
+}
+
+.login-card h1 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.login-note {
+    font-size: 0.875rem;
+    opacity: 0.75;
+    margin-bottom: var(--space-4);
+}
+
+.login-form {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.field {
+    display: grid;
+    gap: var(--space-1);
+}
+
+.field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.field input {
+    width: 100%;
+    padding: var(--space-2);
+    border: 1px solid rgba(41, 35, 35, 0.35);
+    border-radius: var(--radius);
+    background: var(--color-white);
+    color: var(--color-text);
+    font: inherit;
+}
+
+.field input:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+.field input.input-error {
+    border-color: var(--color-text);
+    background-color: var(--color-background);
+}
+
+.login-message {
+    min-height: 1.25rem;
+    font-size: 0.8125rem;
+}
+
+.login-message.is-error {
+    font-weight: 600;
+}
+
+.button-primary {
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-text);
+    color: var(--color-white);
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: opacity var(--transition-fast);
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+    opacity: 0.85;
+}
+
+.login-back {
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+}
+
+.login-back a {
+    text-decoration: underline;
+}
+
+/* -------------------------------------
+   PAINEL
+------------------------------------- */
+
+.admin-header {
+    border-bottom: 1px solid var(--color-surface);
+}
+
+.admin-toolbar {
+    padding: var(--space-3) 0;
+    background-color: var(--color-surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.toolbar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.toolbar-note {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.admin-section {
+    padding: var(--space-6) 0;
+}
+
+.admin-section h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+@media (min-width: 900px) {
+    .admin-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Zonas editáveis translúcidas */
+
+.edit-frame {
+    position: relative;
+    cursor: copy;
+}
+
+.edit-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.edit-veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.55);
+    border: 2px dashed rgba(41, 35, 35, 0.5);
+    border-radius: var(--radius);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    padding: var(--space-3);
+    text-align: center;
+}
+
+.edit-frame:hover .edit-veil,
+.edit-frame:focus-within .edit-veil,
+.edit-frame.is-dragover .edit-veil {
+    opacity: 1;
+}
+
+.edit-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+[data-editable] {
+    position: relative;
+    padding: var(--space-1);
+    border-radius: var(--radius);
+    transition: background-color var(--transition-fast);
+}
+
+[data-editable]:hover {
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+[data-editable]:focus {
+    outline: 2px dashed var(--color-text);
+    outline-offset: 2px;
+}
+
+[data-editable].is-editing {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.edit-input {
+    width: 100%;
+    font: inherit;
+    padding: var(--space-1);
+    border: 1px solid var(--color-text);
+    border-radius: var(--radius);
+    background: var(--color-white);
+    color: var(--color-text);
+}
+
+/* Cartões da galeria administrativa */
+
+.admin-gallery .post {
+    position: relative;
+    padding: var(--space-2);
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+}
+
+.admin-gallery .post.is-main {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+.admin-gallery .media-frame {
+    position: relative;
+    cursor: copy;
+}
+
+.admin-gallery .edit-veil {
+    border-radius: 0;
+}
+
+.admin-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+}
+
+.admin-controls button {
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid rgba(41, 35, 35, 0.4);
+    border-radius: var(--radius);
+    background-color: var(--color-background);
+    transition: background-color var(--transition-fast);
+}
+
+.admin-controls button:hover,
+.admin-controls button:focus-visible {
+    background-color: var(--color-white);
+}
+
+.admin-controls button[aria-pressed="true"] {
+    background-color: var(--color-text);
+    color: var(--color-white);
+}
+
+/* Mensagens de upload */
+
+.upload-message {
+    min-height: 1.25rem;
+    font-size: 0.75rem;
+    margin-top: var(--space-1);
+}
+
+.upload-message.is-error {
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .admin-toolbar .toolbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

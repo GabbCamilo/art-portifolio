@@ -1,0 +1,692 @@
+/* ========================================
+   1. FONTES
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;800&display=swap');
+
+/* ========================================
+   2. VARIÁVEIS GLOBAIS
+======================================== */
+
+:root {
+    /* Cores */
+    --color-background: #F8EEEE;
+    --color-surface: #EAD6D5;
+    --color-text: #292323;
+    --color-white: #FFFFFF;
+
+    /* Tipografia */
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Espaçamento */
+    --space-0: 0;
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2rem;
+    --space-5: 3rem;
+    --space-6: 4rem;
+    --space-8: 6rem;
+
+    /* Layout */
+    --container-width: 100%;
+    --container-max-width: 960px;
+    --container-padding: 1rem;
+
+    /* Bordas e sombras */
+    --radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(41, 35, 35, 0.06);
+    --shadow-md: 0 4px 6px rgba(41, 35, 35, 0.08);
+    --shadow-lg: 0 8px 24px rgba(41, 35, 35, 0.10);
+
+    /* Transições */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+
+    /* Quebras de tela */
+    --bp-sm: 640px;
+    --bp-lg: 900px;
+
+    /* Muro de fotos */
+    --wall-flash-bg: rgba(41, 35, 35, 0.55);
+
+    /* Lightbox */
+    --lightbox-backdrop: rgba(20, 18, 18, 0.94);
+    --caption-bg: rgba(255, 255, 255, 0.72);
+}
+
+/* ========================================
+   3. CONFIGURAÇÕES GERAIS
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.lightbox-open {
+    overflow: hidden;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.container {
+    width: var(--container-width);
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--space-2);
+    background: var(--color-text);
+    color: var(--color-white);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius);
+    z-index: 100;
+    transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: var(--space-2);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   4. HEADER + OBRA EM DESTAQUE
+======================================== */
+
+.site-header {
+    padding: var(--space-3) 0 0;
+    background-color: var(--color-background);
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-3);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+/* Faixa da obra em destaque (contida no container) */
+.featured-band {
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-4);
+}
+
+.featured-artwork {
+    position: relative;
+    margin: 0;
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.featured-artwork img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Mescla esbranquiçada: a imagem desmancha em direção ao fundo da página */
+.featured-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 42%;
+    background: linear-gradient(
+        to bottom,
+        rgba(248, 238, 238, 0) 0%,
+        rgba(248, 238, 238, 0.55) 55%,
+        var(--color-background) 96%
+    );
+    pointer-events: none;
+}
+
+/* ========================================
+   5. HERO — APRESENTAÇÃO 50/50
+======================================== */
+
+.hero {
+    padding: var(--space-4) 0 var(--space-6);
+}
+
+.hero-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: start;
+}
+
+.hero-media {
+    margin: 0;
+    width: 100%;
+}
+
+.hero-media .media-frame {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+/* Caixa de texto do hero (sobre o fundo da página, sem superfície) */
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: 0;
+}
+
+.details-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+}
+
+.details-list {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.details-row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: var(--space-2);
+    align-items: baseline;
+}
+
+.details-row dt {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.details-row dd {
+    font-size: 0.9375rem;
+}
+
+.details-description,
+.details-complementary {
+    font-size: 0.9375rem;
+    opacity: 0.85;
+}
+
+/* ========================================
+   6. MURO DE FOTOS (GRADE FLUIDA)
+======================================== */
+
+.wall-section {
+    padding: var(--space-6) 0 var(--space-8);
+}
+
+.wall {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+}
+
+.wall-item {
+    position: relative;
+    aspect-ratio: 2 / 1;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    cursor: zoom-in;
+    padding: 0;
+    border: none;
+    display: block;
+    width: 100%;
+}
+
+.wall-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-base);
+}
+
+.wall-item:hover img,
+.wall-item:focus-visible img {
+    transform: scale(1.04);
+}
+
+/* Flash escuro uniforme no hover/foco */
+.wall-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--wall-flash-bg);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    pointer-events: none;
+}
+
+.wall-item:hover::after,
+.wall-item:focus-visible::after {
+    opacity: 1;
+}
+
+/* Nome do arquivo na base da imagem, texto centralizado,
+   mesmo fundo do flash para não ficar contornado por borda */
+.wall-tooltip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    padding: 0.5rem var(--space-2);
+    background: var(--wall-flash-bg);
+    color: var(--color-white);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+.feed-sentinel {
+    height: 1px;
+    margin-top: var(--space-4);
+}
+
+.feed-status {
+    min-height: 1.5rem;
+    margin-top: var(--space-2);
+    text-align: center;
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+/* ========================================
+   7. LEGENDAS DE METADADOS (HOVER)
+======================================== */
+
+.media-frame,
+.featured-artwork {
+    position: relative;
+    background-color: var(--color-surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.media-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-caption {
+    position: absolute;
+    left: var(--space-1);
+    right: var(--space-1);
+    bottom: var(--space-1);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: 0.375rem var(--space-2);
+    background: rgba(41, 35, 35, 0.82);
+    color: var(--color-white);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.media-frame:hover .media-caption,
+.media-frame:focus-within .media-caption {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.caption-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ========================================
+   8. CARTÕES (USADOS PELO ADMIN)
+======================================== */
+
+.post {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.post .media-frame {
+    cursor: zoom-in;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.post-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.125rem, 3vw, 1.25rem);
+    font-weight: 600;
+}
+
+.post-description {
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
+
+.post-meta {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+/* ========================================
+   9. FOOTER
+======================================== */
+
+.site-footer {
+    margin-top: auto;
+    padding: var(--space-6) 0 var(--space-4);
+    border-top: 1px solid var(--color-surface);
+    text-align: center;
+}
+
+.site-footer p {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-bottom: var(--space-3);
+}
+
+.site-footer nav ul {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.site-footer a {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+    opacity: 0.8;
+}
+
+/* ========================================
+   10. LIGHTBOX
+======================================== */
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--lightbox-backdrop);
+    padding: var(--space-4);
+}
+
+.lightbox[hidden] {
+    display: none;
+}
+
+.lightbox-stage {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: calc(100vh - 12rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius);
+}
+
+.lightbox-caption {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-1) var(--space-2);
+    background: var(--caption-bg);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    color: var(--color-text);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-white);
+    opacity: 0.7;
+    border-radius: var(--radius);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.lightbox-close:hover,
+.lightbox-close:focus-visible {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Setas translúcidas nas laterais da imagem */
+.lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--color-white);
+    opacity: 0.35;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.lightbox-arrow:hover,
+.lightbox-arrow:focus-visible {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15);
+}
+
+.lightbox-prev {
+    left: var(--space-2);
+}
+
+.lightbox-next {
+    right: var(--space-2);
+}
+
+.lightbox-indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-2) 0 var(--space-1);
+    flex-wrap: wrap;
+}
+
+.indicator {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background-color: var(--color-white);
+    opacity: 0.35;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    padding: 0;
+}
+
+.indicator:hover,
+.indicator:focus-visible {
+    opacity: 0.7;
+}
+
+.indicator.current {
+    opacity: 1;
+    transform: scale(1.3);
+}
+
+/* ========================================
+   11. RESPONSIVIDADE
+======================================== */
+
+@media (min-width: 900px) {
+    .hero-split {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .hero-media .media-frame {
+        aspect-ratio: 4 / 5;
+    }
+
+    .details-row {
+        grid-template-columns: 7.5rem 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .featured-band {
+        padding-top: var(--space-2);
+        padding-bottom: var(--space-3);
+    }
+
+    .hero {
+        padding: var(--space-3) 0 var(--space-5);
+    }
+
+    .hero-split {
+        gap: var(--space-3);
+    }
+
+    .wall {
+        gap: var(--space-3);
+    }
+
+    .wall-item {
+        aspect-ratio: 4 / 3;
+    }
+
+    .lightbox-arrow {
+        top: auto;
+        bottom: 4rem;
+        transform: none;
+    }
+
+    .lightbox-arrow:hover,
+    .lightbox-arrow:focus-visible {
+        transform: scale(1.15);
+    }
+}
+
+/* ========================================
+   12. REDUZIR MOVIMENTO
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

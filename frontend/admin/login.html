@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acesso administrativo do Art Portfolio.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <title>Administração — Art Portfolio</title>
+</head>
+<body class="admin-body">
+
+    <main class="admin-login">
+        <div class="container">
+            <section class="login-card" aria-labelledby="login-title">
+                <p class="login-brand">Art Portfolio</p>
+
+                <h1 id="login-title">Acesso administrativo</h1>
+
+                <p class="login-note">
+                    Esta é apenas a estrutura visual. A autenticação real será
+                    implementada no backend (Etapa 07).
+                </p>
+
+                <form id="login-form" class="login-form" novalidate>
+                    <div class="field">
+                        <label for="login-user">Usuário</label>
+                        <input type="text" id="login-user" name="user" autocomplete="username" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+                    </div>
+
+                    <p id="login-message" class="login-message" role="alert" aria-live="polite"></p>
+
+                    <button type="submit" class="button-primary">Acessar</button>
+                </form>
+
+                <p class="login-back">
+                    <a href="../index.html">Voltar para a página pública</a>
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>
