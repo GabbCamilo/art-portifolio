@@ -284,37 +284,21 @@ button:focus-visible,
     opacity: 0.85;
 }
 
-/* Caixas de texto do hero */
-
-.hero-topics {
-    margin-top: var(--space-3);
-}
-
-.hero-topic {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.hero-topic-title {
-    font-family: var(--font-heading);
-    font-size: clamp(1rem, 2.5vw, 1.125rem);
-    font-weight: 600;
-    margin: 0;
-}
-
-.hero-topic-body {
-    font-size: 0.9375rem;
-    opacity: 0.85;
-    margin: 0;
-}
-
 /* ========================================
    6. MURO DE FOTOS (GRADE FLUIDA)
    ======================================== */
 
 .wall-section {
     padding: var(--space-6) 0 var(--space-8);
+}
+
+.wall-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
 }
 
 .wall {

@@ -2,6 +2,35 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const { mapPublication } = require('../lib/mappers');
+const { requireAuth } = require('../middleware/auth');
+const path = require('path');
+const { unlink } = require('fs/promises');
+
+function validatePublication(body) {
+    const errors = [];
+    if (typeof body.featured !== 'boolean') {
+        errors.push('featured: boolean obrigatório');
+    }
+    if (typeof body.file_name !== 'string' || body.file_name.trim() === '') {
+        errors.push('file_name: string não vazia obrigatória');
+    }
+    if (typeof body.file_size !== 'string' || body.file_size.trim() === '') {
+        errors.push('file_size: string não vazia obrigatória');
+    }
+    if (typeof body.width !== 'number' || !Number.isInteger(body.width) || body.width <= 0) {
+        errors.push('width: inteiro positivo obrigatório');
+    }
+    if (typeof body.height !== 'number' || !Number.isInteger(body.height) || body.height <= 0) {
+        errors.push('height: inteiro positivo obrigatório');
+    }
+    if (body.description !== undefined && typeof body.description !== 'string') {
+        errors.push('description: string obrigatória');
+    }
+    if (body.complementary !== undefined && typeof body.complementary !== 'string') {
+        errors.push('complementary: string obrigatória');
+    }
+    return errors;
+}
 
 router.get('/publications', async (req, res, next) => {
     try {
@@ -29,7 +58,85 @@ router.get('/publications', async (req, res, next) => {
             [...params, limit, offset]
         );
 
-        res.json({ items: rows.map(mapPublication), total, limit, offset });
+        const items = featured === 'true'
+            ? rows.map((row) => mapPublication(row, true))
+            : rows.map((row) => mapPublication(row));
+        res.json({ items, total, limit, offset });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/admin/publications', requireAuth, async (req, res, next) => {
+    try {
+        const errors = validatePublication(req.body);
+        if (errors.length > 0) {
+            return res.status(400).json({ error: 'Validação falhou', details: errors });
+        }
+        const { description, complementary, featured, file_name, file_size, width, height } = req.body;
+
+        const [result] = await pool.query(
+            `INSERT INTO publications (description, complementary, published_at, featured, file_name, file_size, width, height)
+             VALUES ('', '', CURRENT_DATE, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE featured = VALUES(featured), file_size = VALUES(file_size), width = VALUES(width), height = VALUES(height)`,
+            [featured ? 1 : 0, file_name, file_size, width, height]
+        );
+        const [rows] = await pool.query('SELECT * FROM publications WHERE file_name = ?', [file_name]);
+        res.status(201).json(mapPublication(rows[0]));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put('/admin/publications/:id', requireAuth, async (req, res, next) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (!Number.isInteger(id)) {
+            return res.status(400).json({ error: 'ID inválido: deve ser numérico' });
+        }
+        const { description, complementary } = req.body;
+
+        if (description !== undefined && typeof description !== 'string') {
+            return res.status(400).json({ error: 'Validação falhou', details: ['description: string obrigatória'] });
+        }
+        if (complementary !== undefined && typeof complementary !== 'string') {
+            return res.status(400).json({ error: 'Validação falhou', details: ['complementary: string obrigatória'] });
+        }
+
+        const [fileRows] = await pool.query('SELECT file_name FROM publications WHERE id = ?', [id]);
+        if (fileRows.length === 0) {
+            return res.status(404).json({ error: 'Publicação não encontrada' });
+        }
+        await pool.query(
+            `UPDATE publications SET description = ?, complementary = ? WHERE id = ?`,
+            [description || '', complementary || '', id]
+        );
+        const [rows] = await pool.query('SELECT * FROM publications WHERE id = ?', [id]);
+        res.json(mapPublication(rows[0], true));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.delete('/admin/publications/:id', requireAuth, async (req, res, next) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (!Number.isInteger(id)) {
+            return res.status(400).json({ error: 'ID inválido: deve ser numérico' });
+        }
+        const [fileRows] = await pool.query('SELECT file_name FROM publications WHERE id = ?', [id]);
+        if (fileRows.length === 0) {
+            return res.status(404).json({ error: 'Publicação não encontrada' });
+        }
+        await pool.query('DELETE FROM publications WHERE id = ?', [id]);
+
+        const base = path.join(__dirname, '../../storage/images', fileRows[0].file_name);
+        await unlink(base).catch(() => {});
+        const stem = path.parse(fileRows[0].file_name).name;
+        for (const variant of ['thumbnail', 'medium', 'full']) {
+            await unlink(path.join(__dirname, '../../storage/processed', `${stem}-${variant}.webp`)).catch(() => {});
+        }
+        res.status(204).end();
     } catch (err) {
         next(err);
     }

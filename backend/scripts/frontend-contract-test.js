@@ -2,7 +2,34 @@ const path = require('path');
 const fs = require('fs');
 const m = require('../../frontend/js/main.js');
 
-/* --- Regressão: admin.js não pode lançar ao carregar em login.html --- */
+(async () => {
+    const artist = await m.loadArtist();
+    console.log('artist:', artist.name, '|', artist.location);
+    console.log('labels:', JSON.stringify(artist.labels));
+    console.log('image:', JSON.stringify(artist.image));
+    if (typeof artist.labels !== 'object' || Array.isArray(artist.labels)) throw new Error('labels deve ser objeto');
+    if (artist.image !== null && typeof artist.image !== 'object') throw new Error('image deve ser objeto ou null');
+
+    const feat = await m.loadFeatured();
+    console.log('featured:', feat && feat.db_id, '|', feat && feat.image.file_name);
+
+    const b1 = await m.loadFeedBatch(6, 0);
+    console.log('batch1:', b1.items.length, 'itens | total =', b1.total, '| primeiro =', b1.items[0] && b1.items[0].id, b1.items[0] && b1.items[0].date);
+    b1.items.forEach(function (i) {
+        if (i.title !== undefined) throw new Error('feed nao deve trazer title');
+        if (i.description !== undefined) throw new Error('feed nao deve trazer descricao');
+    });
+
+    console.log('indicatorWindow(5,10,3):', JSON.stringify(m.computeIndicatorWindow(5, 10, 3)));
+    console.log('ALL OK');
+})().catch(e => { console.error('FAIL:', e.message); process.exit(1); });
+
+/* -------------------------------------
+   Regressao: admin.js nao pode lançar ao carregar em login.html
+   ------------------------------------- */
+
+const adminSrc = fs.readFileSync(path.resolve(__dirname, '../../frontend/js/admin.js'), 'utf8');
+
 const nullEl = () => null;
 global.document = {
     getElementById: nullEl,
@@ -17,7 +44,7 @@ global.document = {
         appendChild() {},
         addEventListener() {}
     }),
-    body: { addEventListener() {} }
+    body: { addEventListener: () => {} },
 };
 global.window = { location: { href: '' } };
 global.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
@@ -25,33 +52,22 @@ global.Event = function () {};
 const originalFetch = global.fetch;
 global.fetch = () => Promise.reject(new Error('sem rede no teste de regressão'));
 
-const adminSrc = fs.readFileSync(path.resolve(__dirname, '../../frontend/js/admin.js'), 'utf8');
-new Function(adminSrc)(); // executa o IIFE; erro de top level lançaria aqui
+new Function(adminSrc)(); // executa o IIFE; erro de top level lancaria aqui
 document.dispatchEvent(new Event('DOMContentLoaded'));
-console.log('admin.js carregado e inicializado sem erros (cenario login.html simulado)');
 global.fetch = originalFetch;
+console.log('admin.js carregado e inicializado sem erros (cenario login.html simulado)');
 
-(async () => {
-    const artist = await m.loadArtist();
-    console.log('artist:', artist.name, '|', artist.location);
-    console.log('labels:', JSON.stringify(artist.labels));
-    console.log('topics:', artist.topics.length, 'itens');
-    if (typeof artist.labels !== 'object' || Array.isArray(artist.labels)) throw new Error('labels deve ser objeto');
-    if (!Array.isArray(artist.topics)) throw new Error('topics deve ser array');
+/* -------------------------------------
+   Estrutura HTML (simplificacao)
+   ------------------------------------- */
 
-    const feat = await m.loadFeatured();
-    console.log('featured:', feat.id, '|', feat.title, '| featured =', feat.featured);
+const indexHtml = fs.readFileSync(path.resolve(__dirname, '../../frontend/index.html'), 'utf8');
+if (indexHtml.includes('hero-topics')) throw new Error('index.html ainda contem hero-topics');
+if (!indexHtml.includes('btn-refresh')) throw new Error('index.html falta botao btn-refresh');
 
-    const b1 = await m.loadFeedBatch(6, 0);
-    console.log('batch1:', b1.items.length, 'itens | total =', b1.total, '| primeiro =', b1.items[0].id, b1.items[0].date);
+const dashboardHtml = fs.readFileSync(path.resolve(__dirname, '../../frontend/admin/dashboard.html'), 'utf8');
+if (dashboardHtml.includes('topics-list') || dashboardHtml.includes('btn-add-topic')) throw new Error('dashboard.html ainda contem caixas de texto');
+if (!dashboardHtml.includes('btn-publish')) throw new Error('dashboard.html falta botao btn-publish');
+if (!dashboardHtml.includes('data-upload-zone')) throw new Error('dashboard.html falta zonas de upload');
 
-    const b2 = await m.loadFeedBatch(4, 6);
-    console.log('batch2:', b2.items.length, 'itens | total =', b2.total);
-
-    console.log('indicatorWindow(5,10,3):', JSON.stringify(m.computeIndicatorWindow(5, 10, 3)));
-
-    m.useSimulatedFallback();
-    console.log('fallback artist:', m.state.artist.name, '| collection:', m.state.collection.length, '| useApi:', m.state.useApi);
-
-    console.log('ALL OK');
-})().catch(e => { console.error('FAIL:', e.message); process.exit(1); });
+console.log('HTML: structure OK');

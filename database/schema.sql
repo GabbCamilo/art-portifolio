@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS artist_profile (
     store VARCHAR(255) NOT NULL,
     patreon VARCHAR(255) NOT NULL,
     labels JSON NOT NULL DEFAULT ('{}'),
+    image_file_name VARCHAR(255) NULL,
+    image_file_size VARCHAR(32) NULL,
+    image_width SMALLINT UNSIGNED NULL,
+    image_height SMALLINT UNSIGNED NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_artist_profile_single_row CHECK (id = 1)
@@ -23,7 +27,6 @@ CREATE TABLE IF NOT EXISTS artist_profile (
 
 CREATE TABLE IF NOT EXISTS publications (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    title VARCHAR(160) NOT NULL,
     description TEXT NOT NULL,
     complementary TEXT NOT NULL,
     published_at DATE NOT NULL,
@@ -62,17 +65,4 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
         REFERENCES admin_users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Etapa 08 — tópicos customizados do Details e rótulos editáveis
-CREATE TABLE IF NOT EXISTS profile_topics (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    title VARCHAR(160) NOT NULL,
-    body TEXT NOT NULL,
-    position INT UNSIGNED NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_profile_topics_position (position)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Para bases existentes da Etapa 03, aplicar como root:
--- ALTER TABLE artist_profile ADD COLUMN labels JSON NOT NULL DEFAULT ('{}') AFTER patreon;

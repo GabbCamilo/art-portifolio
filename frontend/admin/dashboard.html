@@ -13,13 +13,11 @@
     <header class="site-header admin-header">
         <div class="container header-inner">
             <a href="../index.html" class="logo">Art Portfolio — Admin</a>
-
             <nav aria-label="Administração">
                 <ul>
                     <li>
                         <a href="../index.html">Ver site</a>
                     </li>
-
                     <li>
                         <a href="login.html" id="logout-link">Sair</a>
                     </li>
@@ -29,100 +27,105 @@
     </header>
     <main>
 
-        <!-- Apresentação principal editável -->
-        <section class="admin-section" aria-labelledby="admin-presentation-title">
+        <!-- Slot: destaque principal -->
+        <section class="admin-section" aria-labelledby="slot-featured-title">
             <div class="container">
-                <h2 id="admin-presentation-title">Apresentação principal</h2>
-
-                <div class="admin-grid">
-                    <div class="media-frame edit-frame" data-upload-zone>
-                        <img src="" alt="Obra principal — pré-visualização" width="1200" height="900" decoding="async">
-
+                <h2 id="slot-featured-title">Destaque principal</h2>
+                <div class="slot-frame">
+                    <div class="media-frame edit-frame" data-upload-zone data-slot="featured">
+                        <img id="slot-featured-img" src="" alt="Destaque principal" width="1200" height="900" decoding="async">
                         <div class="edit-veil">
-                            <span class="edit-label">Substituir imagem (arraste ou selecione)</span>
+                            <span class="edit-label">Enviar imagem de destaque</span>
                             <input type="file" accept="image/*" hidden data-file-input>
                         </div>
                     </div>
+                    <p id="slot-featured-msg" class="slot-message" role="status"></p>
+                </div>
+            </div>
+        </section>
 
-                    <div class="details">
-                        <h3 class="details-title">Details</h3>
-
-                        <dl class="details-list">
-                            <div class="details-row">
-                                <dt data-editable data-label-for="artist">Artist</dt>
-                                <dd data-editable data-field="name">Kenyureru</dd>
-                            </div>
-
-                            <div class="details-row">
-                                <dt data-editable data-label-for="location">Location</dt>
-                                <dd data-editable data-field="location">São Paulo, Brasil</dd>
-                            </div>
-
-                            <div class="details-row">
-                                <dt data-editable data-label-for="medium">Medium</dt>
-                                <dd data-editable data-field="medium">Digital</dd>
-                            </div>
-
-                            <div class="details-row">
-                                <dt data-editable data-label-for="website">Website</dt>
-                                <dd data-editable data-field="website">https://exemplo.com</dd>
-                            </div>
-
-                            <div class="details-row">
-                                <dt data-editable data-label-for="store">Store</dt>
-                                <dd data-editable data-field="store">N/A</dd>
-                            </div>
-
-                            <div class="details-row">
-                                <dt data-editable data-label-for="patreon">Patreon</dt>
-                                <dd data-editable data-field="patreon">N/A</dd>
-                            </div>
-                        </dl>
-
-                        <p class="details-description" data-editable>
-                            Descrição da obra principal selecionada pelo proprietário.
-                        </p>
-
-                        <p class="details-complementary" data-editable data-multiline data-field="complementary">
-                            Informações complementares sobre técnica, dimensões e ano.
-                        </p>
-                        <div class="topics-section">
-                            <h3 class="details-title">Caixas de texto</h3>
-                            <div class="topics-list" id="topics-list"></div>
-                            <button type="button" class="button-primary" id="btn-add-topic">Adicionar caixa de texto</button>
+        <!-- Slot: perfil (imagem ao lado dos textos do Details) -->
+        <section class="admin-section" aria-labelledby="slot-profile-title">
+            <div class="container profile-row">
+                <div class="slot-frame">
+                    <div class="media-frame edit-frame" data-upload-zone data-slot="profile">
+                        <img id="slot-profile-img" src="" alt="Imagem do perfil" width="800" height="1000" decoding="async">
+                        <div class="edit-veil">
+                            <span class="edit-label">Enviar imagem do perfil</span>
+                            <input type="file" accept="image/*" hidden data-file-input>
                         </div>
                     </div>
+                    <p id="slot-profile-msg" class="slot-message" role="status"></p>
                 </div>
+                <div class="details">
+                    <h3 class="details-title">Details</h3>
+                    <dl class="details-list">
+                        <div class="details-row">
+                            <dt data-editable data-label-for="artist">Artist</dt>
+                            <dd data-editable data-field="name">Kenyureru</dd>
+                        </div>
+                        <div class="details-row">
+                            <dt data-editable data-label-for="location">Location</dt>
+                            <dd data-editable data-field="location">São Paulo, Brasil</dd>
+                        </div>
+                        <div class="details-row">
+                            <dt data-editable data-label-for="medium">Medium</dt>
+                            <dd data-editable data-field="medium">Digital</dd>
+                        </div>
+                        <div class="details-row">
+                            <dt data-editable data-label-for="website">Website</dt>
+                            <dd data-editable data-field="website">https://exemplo.com</dd>
+                        </div>
+                        <div class="details-row">
+                            <dt data-editable data-label-for="store">Store</dt>
+                            <dd data-editable data-field="store">N/A</dd>
+                        </div>
+                        <div class="details-row">
+                            <dt data-editable data-label-for="patreon">Patreon</dt>
+                            <dd data-editable data-field="patreon">N/A</dd>
+                        </div>
+                    </dl>
+                    <p class="details-description" data-editable>
+                        Descrição da obra principal selecionada pelo proprietário.
+                    </p>
+                    <p class="details-complementary" data-editable data-multiline data-field="complementary">
+                        Informações complementares sobre técnica, dimensões e ano.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feed: upload de imagens + lista -->
+        <section class="admin-section" aria-labelledby="admin-feed-title">
+            <div class="container">
+                <h2 id="admin-feed-title">Publicações</h2>
+                <div class="feed-zone">
+                    <div class="media-frame edit-frame" data-upload-zone data-slot="feed">
+                        <img id="slot-feed-img" src="" alt="Pré-visualização do upload" width="1200" height="900" decoding="async">
+                        <div class="edit-veil">
+                            <span class="edit-label">Adicionar imagens ao feed (selecionar arquivo)</span>
+                            <input type="file" accept="image/*" hidden data-file-input>
+                        </div>
+                    </div>
+                    <p id="slot-feed-msg" class="slot-message" role="status"></p>
+                </div>
+                <div class="gallery admin-gallery" id="admin-gallery"></div>
+                <p id="admin-note" class="section-note">Clique em “×” para remover uma publicação.</p>
+                <p id="admin-empty" class="section-note is-empty" hidden>Nenhuma publicação ainda. Adicione imagens acima.</p>
             </div>
         </section>
 
         <section class="admin-toolbar" aria-label="Ações do painel">
             <div class="container toolbar-inner">
-                <button type="button" class="button-primary" id="btn-add">Adicionar publicação</button>
-
-                <p class="toolbar-note">
-                    Painel visual simulado: edições e uploads não são persistidos nesta etapa.
-                </p>
-            </div>
-        </section>
-
-        <!-- Galeria editável -->
-        <section class="admin-section" aria-labelledby="admin-gallery-title">
-            <div class="container">
-                <h2 id="admin-gallery-title">Publicações</h2>
-
-                <div class="gallery admin-gallery" id="admin-gallery"></div>
-
-                <p class="section-note" id="admin-note">
-                    Use os controles de cada cartão para reorganizar, definir a publicação principal ou remover.
-                </p>
+                <button type="button" class="button-primary" id="btn-publish">Salvar / Atualizar site</button>
+                <p id="publish-status" class="toolbar-status" role="status"></p>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 Art Portfolio. Área administrativa — estrutura visual.</p>
+            <p>&copy; 2026 Art Portfolio. Área administrativa.</p>
         </div>
     </footer>
 

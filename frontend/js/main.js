@@ -1,14 +1,14 @@
 /* ========================================
    ART PORTFOLIO — FRONTEND VANILLA JS
-   Header com destaque, hero editorial
-   50/50 e muro de fotos em grade fluida.
-   Dados via fetch() na API (Etapa 05),
-   com fallback simulado se a API estiver
-   indisponível.
+   Header com destaque, hero editorial 50/50
+   e muro de fotos em grade fluida.
+   Dados via fetch() na API, sem dados
+   simulados: a página exibe apenas o que
+   está no banco de dados.
    ======================================== */
 
 /* -------------------------------------
-   1. DADOS SIMULADOS (fallback offline)
+   1. RÓTULOS PADRÃO (fallback de rótulo)
    ------------------------------------- */
 
 const DEFAULT_LABELS = {
@@ -20,175 +20,12 @@ const DEFAULT_LABELS = {
     patreon: 'Patreon',
 };
 
-const SIMULATED_ARTIST = {
-    name: 'Kenyureru',
-    location: 'São Paulo, Brasil',
-    medium: 'Digital',
-    website: 'https://exemplo.com',
-    store: 'N/A',
-    patreon: 'N/A',
-    labels: DEFAULT_LABELS,
-    topics: [],
-};
-
-const SIMULATED_PUBLICATIONS = [
-    {
-        id: 'featured-01',
-        title: 'Retratos Urbanos',
-        description: 'Uma série de esboços rápidos capturando a luz da cidade ao entardecer.',
-        complementary: 'Obra selecionada manualmente pelo proprietário como publicação principal. Dados simulados até a integração com backend.',
-        date: '2026-05-12',
-        featured: true,
-        image: {
-            file_name: 'retratos-urbanos.jpg',
-            file_size: '2,4 MB',
-            width: 1200,
-            height: 900,
-            tone: 0,
-        },
-    },
-    {
-        id: 'pub-02',
-        title: 'Natureza Abstrata',
-        description: 'Exploração de texturas e gradientes em óleo sobre tela grande.',
-        complementary: '',
-        date: '2026-04-08',
-        featured: false,
-        image: {
-            file_name: 'natureza-abstrata.jpg',
-            file_size: '1,8 MB',
-            width: 1600,
-            height: 900,
-            tone: 1,
-        },
-    },
-    {
-        id: 'pub-03',
-        title: 'Figuras em Movimento',
-        description: 'Desenhos de carvão estudando posa e gesto humano.',
-        complementary: '',
-        date: '2026-03-22',
-        featured: false,
-        image: {
-            file_name: 'figuras-em-movimento.jpg',
-            file_size: '3,1 MB',
-            width: 1000,
-            height: 1400,
-            tone: 2,
-        },
-    },
-    {
-        id: 'pub-04',
-        title: 'Cidade Noturna',
-        description: 'Pintura digital experimentando paletas monocromáticas.',
-        complementary: '',
-        date: '2026-02-18',
-        featured: false,
-        image: {
-            file_name: 'cidade-noturna.jpg',
-            file_size: '2,2 MB',
-            width: 1400,
-            height: 1000,
-            tone: 3,
-        },
-    },
-    {
-        id: 'pub-05',
-        title: 'Auto-retrato Expressivo',
-        description: 'Técnica mista sobre papel kraft, 2024.',
-        complementary: '',
-        date: '2026-02-05',
-        featured: false,
-        image: {
-            file_name: 'auto-retrato-expressivo.jpg',
-            file_size: '1,5 MB',
-            width: 1000,
-            height: 1000,
-            tone: 4,
-        },
-    },
-    {
-        id: 'pub-06',
-        title: 'Maré Baixa',
-        description: 'Estudo de luz sobre água em aquarela digital.',
-        complementary: '',
-        date: '2026-01-20',
-        featured: false,
-        image: {
-            file_name: 'mare-baixa.jpg',
-            file_size: '2,0 MB',
-            width: 1500,
-            height: 1000,
-            tone: 5,
-        },
-    },
-    {
-        id: 'pub-07',
-        title: 'Silêncio do Interior',
-        description: 'Composição minimalista com formas orgânicas.',
-        complementary: '',
-        date: '2025-12-11',
-        featured: false,
-        image: {
-            file_name: 'silencio-do-interior.jpg',
-            file_size: '2,7 MB',
-            width: 1200,
-            height: 1500,
-            tone: 6,
-        },
-    },
-    {
-        id: 'pub-08',
-        title: 'Entre Linhas',
-        description: 'Collage digital explorando geometria e espaço negativo.',
-        complementary: '',
-        date: '2025-11-03',
-        featured: false,
-        image: {
-            file_name: 'entre-linhas.jpg',
-            file_size: '1,9 MB',
-            width: 1600,
-            height: 1200,
-            tone: 7,
-        },
-    },
-    {
-        id: 'pub-09',
-        title: 'Jardim Suspenso',
-        description: 'Ilustração botânica com paleta restrita.',
-        complementary: '',
-        date: '2025-10-15',
-        featured: false,
-        image: {
-            file_name: 'jardim-suspenso.jpg',
-            file_size: '2,3 MB',
-            width: 1000,
-            height: 1300,
-            tone: 8,
-        },
-    },
-    {
-        id: 'pub-10',
-        title: 'Última Luz',
-        description: 'Estudo final de dia ao entardecer.',
-        complementary: '',
-        date: '2025-09-28',
-        featured: false,
-        image: {
-            file_name: 'ultima-luz.jpg',
-            file_size: '1,6 MB',
-            width: 1400,
-            height: 900,
-            tone: 9,
-        },
-    },
-];
-
 /* -------------------------------------
    2. CONFIGURAÇÃO E ESTADO
    ------------------------------------- */
 
 const API_BASE = 'http://localhost:3000/api';
+const STORAGE_BASE = API_BASE.replace(/\/api$/, '') + '/storage';
 const BATCH_INITIAL = 6;
 const BATCH_NEXT = 4;
 const INDICATOR_COUNT = 5;
@@ -205,8 +42,10 @@ const state = {
     lastFocusedElement: null,
 };
 
+let apiOffline = false;
+
 /* -------------------------------------
-   3. ACESSO A DADOS (API + fallback)
+   3. ACESSO A DADOS (API)
    ------------------------------------- */
 
 async function apiFetch(path) {
@@ -228,7 +67,7 @@ async function loadArtist() {
         store: data.store,
         patreon: data.patreon,
         labels: data.labels || {},
-        topics: Array.isArray(data.topics) ? data.topics : [],
+        image: data.image || null,
     };
     return state.artist;
 }
@@ -240,16 +79,6 @@ async function loadFeatured() {
 
 async function loadFeedBatch(limit, offset) {
     return apiFetch(`/publications?featured=false&limit=${limit}&offset=${offset}`);
-}
-
-function useSimulatedFallback() {
-    state.artist = SIMULATED_ARTIST;
-    state.featured = SIMULATED_PUBLICATIONS.find(p => p.featured) || null;
-    state.collection = SIMULATED_PUBLICATIONS
-        .filter(p => !p.featured)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-    state.total = state.collection.length;
-    state.useApi = false;
 }
 
 async function loadInitialData() {
@@ -290,15 +119,15 @@ function svgPlaceholder(width, height, tone, label) {
     const fg = texts[tone % texts.length];
     const safeLabel = label.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
-        `<rect width="100%" height="100%" fill="${bg}"/>` +
-        `<text x="50%" y="50%" fill="${fg}" font-family="sans-serif" font-size="${Math.round(Math.min(width, height) * 0.05)}" text-anchor="middle" dominant-baseline="middle">${safeLabel}</text>` +
-        `</svg>`;
+        '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+        '<rect width="100%" height="100%" fill="' + bg + '"/>' +
+        '<text x="50%" y="50%" fill="' + fg + '" font-family="sans-serif" font-size="' + Math.round(Math.min(width, height) * 0.05) + '" text-anchor="middle" dominant-baseline="middle">' + safeLabel + '</text>' +
+        '</svg>';
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
 function imageSrc(image) {
-    return svgPlaceholder(image.width, image.height, image.tone, image.file_name);
+    return STORAGE_BASE + '/images/' + image.file_name;
 }
 
 /* -------------------------------------
@@ -313,7 +142,7 @@ function renderFeatured() {
     if (!image) return;
 
     image.src = imageSrc(featured.image);
-    image.alt = featured.title + ' — obra em destaque';
+    image.alt = featured.image.file_name + ' — obra em destaque';
     image.width = featured.image.width;
     image.height = featured.image.height;
 }
@@ -324,20 +153,27 @@ function renderFeatured() {
 
 function renderHero() {
     const featured = state.featured;
-    if (!featured) return;
+    const artist = state.artist;
 
-    const secondary = state.collection[0] || null;
+    const profile = artist && artist.image;
     const heroImage = document.getElementById('hero-image');
-
-    if (secondary && heroImage) {
-        heroImage.src = svgPlaceholder(800, 1000, secondary.image.tone, secondary.image.file_name);
-        heroImage.alt = secondary.title + ' — obra secundária';
-        heroImage.width = secondary.image.width;
-        heroImage.height = secondary.image.height;
-        document.getElementById('hero-name').textContent = secondary.image.file_name;
+    if (heroImage) {
+        if (profile) {
+            heroImage.src = imageSrc(profile);
+            heroImage.alt = 'Imagem do perfil';
+            heroImage.width = profile.width;
+            heroImage.height = profile.height;
+        } else {
+            heroImage.src = '';
+            heroImage.alt = '';
+        }
     }
 
-    const artist = state.artist || SIMULATED_ARTIST;
+    const name = document.getElementById('hero-name');
+    if (name) name.textContent = profile ? profile.file_name : '';
+
+    if (!artist) return;
+
     document.getElementById('detail-artist').textContent = artist.name;
     document.getElementById('detail-location').textContent = artist.location;
     document.getElementById('detail-medium').textContent = artist.medium;
@@ -353,55 +189,36 @@ function renderHero() {
 
     document.getElementById('detail-store').textContent = artist.store;
     document.getElementById('detail-patreon').textContent = artist.patreon;
-    document.getElementById('hero-description').textContent = featured.description;
-    document.getElementById('hero-complementary').textContent = featured.complementary;
+
+    if (featured) {
+        document.getElementById('hero-description').textContent = featured.description || '';
+        document.getElementById('hero-complementary').textContent = featured.complementary || '';
+    }
 
     const labels = state.artist.labels || {};
-    document.querySelectorAll('dt[data-label-for]').forEach(el => {
+    document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
         el.textContent = labels[el.dataset.labelFor] || DEFAULT_LABELS[el.dataset.labelFor] || '';
     });
-    renderTopics(state.artist.topics);
 }
 
-function renderTopics(topics) {
-    const container = document.getElementById('hero-topics');
-    if (!container) return;
-
-    container.innerHTML = '';
-    (topics || [])
-        .slice()
-        .sort((a, b) => (a.position || 0) - (b.position || 0))
-        .forEach(topic => {
-            const box = document.createElement('div');
-            box.className = 'hero-topic';
-
-            const title = document.createElement('h4');
-            title.className = 'hero-topic-title';
-            title.textContent = topic.title;
-
-            const body = document.createElement('p');
-            body.className = 'hero-topic-body';
-            body.textContent = topic.body;
-
-            box.appendChild(title);
-            box.appendChild(body);
-            container.appendChild(box);
-        });
-}
+/* -------------------------------------
+   7. MURO DE FOTOS (GRADE FLUIDA)
+   ------------------------------------- */
 
 function createWallItem(post, globalIndex) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'wall-item';
-    button.setAttribute('aria-label', 'Abrir ' + post.title + ' em visualização ampliada');
+    button.setAttribute('aria-label', 'Abrir imagem em visualização ampliada');
 
     const img = document.createElement('img');
-    img.src = svgPlaceholder(800, 400, post.image.tone, post.image.file_name);
-    img.alt = post.title;
-    img.width = post.image.width;
-    img.height = post.image.height;
+    img.src = imageSrc(post.image);
+    img.alt = post.image.file_name;
     img.loading = 'lazy';
     img.decoding = 'async';
+    img.onerror = function () {
+        this.src = svgPlaceholder(this.width || 800, this.height || 400, 0, this.alt);
+    };
     button.appendChild(img);
 
     const tooltip = document.createElement('span');
@@ -465,6 +282,11 @@ function renderInitialWall() {
     const sentinel = document.getElementById('feed-sentinel');
     if (!wall || !status) return;
 
+    if (apiOffline) {
+        status.textContent = 'Serviço de dados indisponível. Clique em "Atualizar" para tentar novamente.';
+        return;
+    }
+
     const firstBatch = state.collection.slice(0, BATCH_INITIAL);
     firstBatch.forEach(appendWallItem);
     state.renderedCount = firstBatch.length;
@@ -504,7 +326,7 @@ function renderLightboxItem() {
 
     const image = document.getElementById('lightbox-image');
     image.src = imageSrc(item.image);
-    image.alt = item.title + ' — ' + item.description;
+    image.alt = item.image.file_name;
     image.width = item.image.width;
     image.height = item.image.height;
 
@@ -648,6 +470,33 @@ function initLightbox() {
     });
 }
 
+const btnRefresh = typeof document !== 'undefined' && document.getElementById('btn-refresh');
+if (btnRefresh) {
+    btnRefresh.addEventListener('click', async function () {
+        const status = document.getElementById('feed-status');
+        try {
+            apiOffline = false;
+            await loadInitialData();
+            renderFeatured();
+            renderHero();
+            const wall = document.getElementById('wall');
+            wall.innerHTML = '';
+            renderInitialWall();
+            if (status) {
+                status.textContent = 'Atualizado.';
+                setTimeout(function () {
+                    if (status && status.textContent === 'Atualizado.') {
+                        status.textContent = state.useApi ? 'Role para carregar mais publicações.' : 'Serviço de dados indisponível. Clique em Atualizar.';
+                    }
+                }, 2000);
+            }
+        } catch (e) {
+            apiOffline = true;
+            if (status) status.textContent = 'Falha ao atualizar.';
+        }
+    });
+}
+
 /* -------------------------------------
    9. INICIALIZAÇÃO
    ------------------------------------- */
@@ -657,8 +506,10 @@ async function init() {
         await loadInitialData();
         console.info('[feed] dados carregados da API:', API_BASE);
     } catch (err) {
-        console.warn('[feed] API indisponível, usando dados simulados.', err);
-        useSimulatedFallback();
+        apiOffline = true;
+        console.warn('[feed] API indisponível.', err);
+        const status = document.getElementById('feed-status');
+        if (status) status.textContent = 'Serviço de dados indisponível. Clique em "Atualizar" para tentar novamente.';
     }
 
     renderFeatured();
@@ -674,14 +525,11 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         API_BASE,
-        SIMULATED_ARTIST,
-        SIMULATED_PUBLICATIONS,
         state,
         loadArtist,
         loadFeatured,
         loadFeedBatch,
         loadInitialData,
-        useSimulatedFallback,
         computeIndicatorWindow,
         formatDateISO,
     };

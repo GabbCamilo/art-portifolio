@@ -2,20 +2,20 @@
 
 ## Purpose
 
-Especificar o endpoint público de perfil do artista servido pela API Express, agora com tópicos customizados, e a atualização administrativa do perfil.
+Especificar o endpoint público de perfil do artista, com rótulos customizáveis e imagem de perfil, e a atualização administrativa do perfil.
 
 ## MODIFIED Requirements
 
 ### Requirement: Endpoint de perfil do artista
-O sistema SHALL expor `GET /api/artist` retornando o perfil único do artista armazenado em `artist_profile` mais a lista `topics` de `profile_topics` ordenada por `position`.
+O sistema SHALL expor `GET /api/artist` retornando o perfil único do artista armazenado em `artist_profile` com rótulos (`labels`) e imagem de perfil (`image`).
 
 #### Scenario: Perfil retornado com sucesso
 - **WHEN** o cliente faz `GET /api/artist`
-- **THEN** a resposta é 200 com JSON contendo `name`, `location`, `medium`, `website`, `store`, `patreon`, `labels` e `topics`
+- **THEN** a resposta é 200 com JSON contendo `name`, `location`, `medium`, `website`, `store`, `patreon`, `labels` e `image`
 
-#### Scenario: Labels e topics retornados
-- **WHEN** o cliente faz `GET /api/artist`
-- **THEN** a resposta é 200 com `labels` (objeto) e `topics` (lista ordenada por posição)
+#### Scenario: Imagem do perfil retornada
+- **WHEN** o administrador enviou uma imagem de perfil
+- **THEN** a resposta de `GET /api/artist` inclui `image` com `file_name`, `file_size`, `width` e `height`
 
 #### Scenario: Perfil sempre existe
 - **WHEN** a tabela `artist_profile` contém a linha única id=1

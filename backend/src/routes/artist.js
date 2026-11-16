@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const { requireAuth } = require('../middleware/auth');
-const { mapArtist, mapTopic } = require('../lib/mappers');
+const { mapArtist } = require('../lib/mappers');
 
 const LABEL_KEYS = ['artist', 'location', 'medium', 'website', 'store', 'patreon'];
 
@@ -36,10 +36,7 @@ router.get('/artist', async (req, res, next) => {
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Perfil do artista não encontrado' });
         }
-        const artist = mapArtist(rows[0]);
-        const [topics] = await pool.query('SELECT * FROM profile_topics ORDER BY position ASC, id ASC');
-        artist.topics = topics.map(mapTopic);
-        res.json(artist);
+        res.json(mapArtist(rows[0]));
     } catch (err) {
         next(err);
     }

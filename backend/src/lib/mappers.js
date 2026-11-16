@@ -1,10 +1,7 @@
-function mapPublication(row) {
-    return {
+function mapPublication(row, withText = false) {
+    const base = {
         id: `pub-${String(row.id).padStart(2, '0')}`,
         db_id: row.id,
-        title: row.title,
-        description: row.description,
-        complementary: row.complementary,
         date: row.published_at,
         featured: Boolean(row.featured),
         image: {
@@ -15,9 +12,14 @@ function mapPublication(row) {
             tone: row.id % 5,
         },
     };
+    if (withText) {
+        base.description = row.description;
+        base.complementary = row.complementary;
+    }
+    return base;
 }
 
-module.exports = { mapPublication, mapArtist, mapTopic };
+module.exports = { mapPublication, mapArtist };
 
 function mapArtist(row) {
     return {
@@ -29,14 +31,13 @@ function mapArtist(row) {
         store: row.store,
         patreon: row.patreon,
         labels: (typeof row.labels === 'string' ? JSON.parse(row.labels || '{}') : row.labels) || {},
-    };
-}
-
-function mapTopic(row) {
-    return {
-        id: row.id,
-        title: row.title,
-        body: row.body,
-        position: row.position,
+        image: row.image_file_name
+            ? {
+                file_name: row.image_file_name,
+                file_size: row.image_file_size,
+                width: row.image_width,
+                height: row.image_height,
+            }
+            : null,
     };
 }

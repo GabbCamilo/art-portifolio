@@ -251,110 +251,52 @@
     min-height: 4rem;
 }
 
-/* Caixas de texto do Details */
-
-.topics-section {
-    margin-top: var(--space-4);
-}
-
-.topics-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-.topic-box {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    padding: var(--space-2);
-    background-color: var(--color-surface);
-    border-radius: var(--radius);
-}
-
-.topic-box input.title,
-.topic-box textarea.body {
-    width: 100%;
-    font: inherit;
-    padding: var(--space-1);
-    border: 1px solid rgba(41, 35, 35, 0.35);
-    border-radius: var(--radius);
-    background: var(--color-white);
-    color: var(--color-text);
-}
-
-.topic-box textarea.body {
-    min-height: 5rem;
-}
-
-.topic-remove {
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--color-text);
-    opacity: 0.5;
-    padding: 0;
-    border-radius: var(--radius);
-}
-
-.topic-remove:hover,
-.topic-remove:focus-visible {
-    opacity: 1;
-    background-color: var(--color-background);
-}
-
 /* Cartões da galeria administrativa */
 
 .admin-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
     gap: var(--space-3);
 }
 
 .admin-gallery .post {
     position: relative;
-    padding: var(--space-2);
     background-color: var(--color-surface);
     border-radius: var(--radius);
-}
-
-.admin-gallery .post.is-main {
-    outline: 2px solid var(--color-text);
-    outline-offset: 2px;
-}
-
-.admin-gallery .media-frame {
-    position: relative;
-    cursor: copy;
-}
-
-.admin-gallery .edit-veil {
-    border-radius: 0;
-}
-
-.admin-controls {
+    overflow: hidden;
+    height: 100%;
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-    margin-top: var(--space-2);
+    flex-direction: column;
 }
 
-.admin-controls button {
-    font-size: 0.75rem;
-    padding: var(--space-1) var(--space-2);
+.admin-gallery .post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.post-remove {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
     border: 1px solid rgba(41, 35, 35, 0.4);
-    border-radius: var(--radius);
-    background-color: var(--color-background);
-    transition: background-color var(--transition-fast);
-}
-
-.admin-controls button:hover,
-.admin-controls button:focus-visible {
     background-color: var(--color-white);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
-.admin-controls button[aria-pressed="true"] {
-    background-color: var(--color-text);
-    color: var(--color-white);
+.post-remove:hover,
+.post-remove:focus-visible {
+    background-color: var(--color-background);
 }
 
 /* Mensagens de upload */
@@ -366,6 +308,48 @@
 }
 
 .upload-message.is-error {
+    font-weight: 600;
+}
+
+.slot-message {
+    min-height: 1.25rem;
+    font-size: 0.75rem;
+    margin-top: var(--space-1);
+}
+
+.slot-message.is-error {
+    font-weight: 600;
+}
+
+.profile-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    align-items: start;
+}
+
+@media (min-width: 900px) {
+    .profile-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.feed-zone {
+    margin-bottom: var(--space-4);
+}
+
+.section-note.is-empty {
+    opacity: 0.7;
+    font-size: 0.875rem;
+}
+
+.toolbar-status {
+    margin-left: var(--space-3);
+    min-height: 1.25rem;
+    font-size: 0.75rem;
+}
+
+.toolbar-status.is-error {
     font-weight: 600;
 }
 
