@@ -87,7 +87,7 @@ art-portifolio/
 
 ## 6. Status do projeto
 
-Em desenvolvimento — Etapa 08: Dashboard sincronizado com a página pública (upload real de imagens por slot, edição de perfil/Details, botão Salvar/Atualizar e remoção de publicações com exclusão de arquivo).
+Em desenvolvimento — Etapa 08: Dashboard sincronizado com a página pública (upload real de imagens por slot, edição de perfil/Details, botão Salvar/Atualizar, remoção de publicações com exclusão de arquivo, flashlight na imagem do hero e slot de upload do feed no tamanho de card com badge "novo").
 
 - Produção (frontend): https://frontend-nine-taupe-63.vercel.app
 - Admin: https://frontend-nine-taupe-63.vercel.app/admin/login

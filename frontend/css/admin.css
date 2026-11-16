@@ -276,6 +276,35 @@
     display: block;
 }
 
+/* Slot de upload do feed — mesmo tamanho de um card de pré-visualização */
+.upload-slot-feed {
+    width: 12rem;
+    height: 12rem;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+.upload-slot-feed img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-badge {
+    position: absolute;
+    top: var(--space-1);
+    left: var(--space-1);
+    background: var(--color-text);
+    color: var(--color-white);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 3;
+}
+
 .post-remove {
     position: absolute;
     top: var(--space-1);

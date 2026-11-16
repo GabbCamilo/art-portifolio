@@ -22,6 +22,8 @@
 - [x] 3.3 `index.html`: sem `#hero-topics`; botão `#btn-refresh`
 - [x] 3.4 `css/admin.css` + `css/style.css`: slots, grid 12rem, cards só-imagem; sem `.hero-topic*`
 - [x] 3.5 `js/admin.js` não lança ao carregar em `login.html` (regressão de DOM corrigida)
+- [x] 3.6 `js/main.js` + `css/style.css`: flashlight/lupa circular na imagem do hero (seguindo o cursor) + zoom `scale(1.1)` no hover; `cursor: crosshair`
+- [x] 3.7 `dashboard.html` + `admin.css`: slot de upload do feed redimensionado para `12rem x 12rem` (mesmo tamanho de um card de pré-visualização) com badge "novo" sobreposto; `edit-veil` mantido
 
 ## 4. Testes locais (sem deploy)
 

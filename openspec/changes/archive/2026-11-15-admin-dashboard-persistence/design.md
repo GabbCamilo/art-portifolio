@@ -20,6 +20,8 @@
 9. **Tooltip do muro**: `opacity: 0` por padrão; visível apenas no `:hover`/`:focus-visible`.
 10. **Sem browser headless**: validação visual continua como checklist manual.
 
+11. **Slot de upload do feed no mesmo tamanho de um card**: a zona de upload do slot `feed` no admin redimensionada para `12rem x 12rem` (mesma largura mínima dos cards da galeria, `minmax(12rem, 1fr)`), com badge "novo" sobreposto no canto superior esquerdo. O `edit-veil` mantém o rótulo e o input de arquivo oculto; o upload continua funcionando via `data-slot="feed"`.
+
 ## Riscos
 
 - Nome de arquivo duplicado no upload: `ON DUPLICATE KEY UPDATE` reusa a linha existente no mesmo slot.
