@@ -26,6 +26,8 @@
 
 13. **Destaque da imagem de perfil do hero ao clicar**: a imagem do perfil (`hero-image`, dentro de `.hero-frame`) abre a mesma visualização ampliada (lightbox) das imagens unitárias do muro, ao clicar ou ao pressionar Enter/Espaço (`role="button"`/`tabindex="0"`/`aria-label`). A área de borda/backdrop fecha a visualização; setas e indicadores ocultos no modo `profile`.
 
+14. **Recorte das imagens publicadas no muro**: as imagens da grade pública (`.wall-item img`) usam `object-fit: cover` com `object-position: top`, mostrando o topo e o meio inteiros da obra; apenas a base (parte inferior) é ocultada pelo recorte do container.
+
 ## Riscos
 
 - Nome de arquivo duplicado no upload: `ON DUPLICATE KEY UPDATE` reusa a linha existente no mesmo slot.

@@ -26,7 +26,7 @@ Fazer o painel administrativo refletir de verdade na página pública: upload re
 ### Frontend
 
 - Admin (`dashboard.html`, `js/admin.js`, `css/admin.css`): zonas de upload por slot (destaque principal, perfil, feed), Details editáveis (rótulos + valores + descrição/complemento da obra principal), cartões só com imagem + Remover, botão "Salvar / Atualizar site"; slot de upload do feed redimensionado para `12rem x 12rem` (mesmo tamanho de um card de pré-visualização) com badge "novo".
-- Público (`index.html`, `js/main.js`, `css/style.css`): sem dados simulados (`SIMULATED_*` removido); imagens reais de `/storage/images/`; botão "Atualizar" no muro; estados vazio e de erro quando a API está fora; imagem do hero abre a mesma visualização ampliada (lightbox) das imagens unitárias do muro ao clicar, com a área de borda/backdrop fechando a visualização; imagem de perfil do hero também abre o lightbox ao clicar.
+- Público (`index.html`, `js/main.js`, `css/style.css`): sem dados simulados (`SIMULATED_*` removido); imagens reais de `/storage/images/`; botão "Atualizar" no muro; estados vazio e de erro quando a API está fora; imagem do hero abre a mesma visualização ampliada (lightbox) das imagens unitárias do muro ao clicar, com a área de borda/backdrop fechando a visualização; imagem de perfil do hero também abre o lightbox ao clicar; imagens publicadas no muro recortam apenas a base (`object-position: top`), mostrando topo e meio inteiros da obra.
 
 ### Autenticação
 

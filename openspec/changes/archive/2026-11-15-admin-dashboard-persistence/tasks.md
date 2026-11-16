@@ -26,6 +26,7 @@
 - [x] 3.7 `dashboard.html` + `admin.css`: slot de upload do feed redimensionado para `12rem x 12rem` (mesmo tamanho de um card de pré-visualização) com badge "novo" sobreposto; `edit-veil` mantido
 - [x] 3.8 `js/main.js` + `css/style.css` + `index.html`: clique (ou Enter/Espaço) na imagem do hero abre a mesma visualização ampliada (lightbox) das imagens unitárias do muro; área de borda/backdrop fecha a visualização; setas e indicadores ocultos no modo featured
 - [x] 3.9 `js/main.js` + `css/style.css` + `index.html`: imagem de perfil do hero (`hero-frame`) com `role="button"`/`tabindex="0"`/`cursor: zoom-in`; clique ou Enter/Espaço abre o lightbox com a imagem do perfil; borda/backdrop fecha a visualização
+- [x] 3.10 `css/style.css`: imagens publicadas no muro (`.wall-item img`) usam `object-fit: cover` com `object-position: top`, mostrando topo e meio inteiros da obra; apenas a base é ocultada pelo recorte
 
 ## 4. Testes locais (sem deploy)
 
