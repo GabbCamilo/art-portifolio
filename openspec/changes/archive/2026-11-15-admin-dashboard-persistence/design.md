@@ -22,6 +22,8 @@
 
 11. **Slot de upload do feed no mesmo tamanho de um card**: a zona de upload do slot `feed` no admin redimensionada para `12rem x 12rem` (mesma largura mínima dos cards da galeria, `minmax(12rem, 1fr)`), com badge "novo" sobreposto no canto superior esquerdo. O `edit-veil` mantém o rótulo e o input de arquivo oculto; o upload continua funcionando via `data-slot="feed"`.
 
+12. **Destaque da imagem do hero ao clicar**: a obra em destaque (`featured-band`, imagem `featured-image`) abre a mesma visualização ampliada (lightbox) usada pelas imagens unitárias do muro, ao clicar ou ao pressionar Enter/Espaço (elemento com `role="button"` e `tabindex="0"`). Todas as bordas/área escura ao redor da imagem (backdrop do lightbox) funcionam como espaço de clique para fechar/sair da visualização destacada; setas de navegação e indicadores são ocultos neste modo, pois é uma imagem única.
+
 ## Riscos
 
 - Nome de arquivo duplicado no upload: `ON DUPLICATE KEY UPDATE` reusa a linha existente no mesmo slot.

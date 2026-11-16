@@ -426,6 +426,7 @@ function openLightbox(index) {
     state.lightboxIndex = index;
     state.lastFocusedElement = document.activeElement;
 
+    lightbox.removeAttribute('data-lightbox-mode');
     lightbox.hidden = false;
     document.body.classList.add('lightbox-open');
     document.addEventListener('keydown', onLightboxKeydown);
@@ -445,10 +446,58 @@ function closeLightbox() {
     lightbox.hidden = true;
     document.body.classList.remove('lightbox-open');
     document.removeEventListener('keydown', onLightboxKeydown);
+    lightbox.removeAttribute('data-lightbox-mode');
 
     if (state.lastFocusedElement && typeof state.lastFocusedElement.focus === 'function') {
         state.lastFocusedElement.focus();
     }
+}
+
+/* -------------------------------------
+   DESTAQUE DA IMAGEM DO HERO (FEATURED)
+   ------------------------------------- */
+
+function openFeaturedLightbox() {
+    const featured = state.featured;
+    if (!featured) return;
+
+    const lightbox = document.getElementById('lightbox');
+    const image = document.getElementById('lightbox-image');
+    const name = document.getElementById('lightbox-name');
+    if (!lightbox || !image || !name) return;
+
+    state.lastFocusedElement = document.activeElement;
+
+    image.src = imageSrc(featured.image);
+    image.alt = featured.image.file_name + ' — obra em destaque';
+    image.width = featured.image.width;
+    image.height = featured.image.height;
+    name.textContent = featured.image.file_name;
+
+    lightbox.setAttribute('data-lightbox-mode', 'featured');
+    lightbox.hidden = false;
+    document.body.classList.add('lightbox-open');
+    document.addEventListener('keydown', onLightboxKeydown);
+
+    const closeButton = document.getElementById('lightbox-close');
+    if (closeButton) {
+        closeButton.focus();
+    }
+}
+
+function initFeaturedLightbox() {
+    const artwork = document.querySelector('.featured-artwork');
+    if (!artwork) return;
+
+    artwork.addEventListener('click', function () {
+        openFeaturedLightbox();
+    });
+    artwork.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openFeaturedLightbox();
+        }
+    });
 }
 
 function initLightbox() {
@@ -461,6 +510,11 @@ function initLightbox() {
 
     lightbox.addEventListener('click', event => {
         if (event.target.closest('button')) return;
+
+        if (lightbox.getAttribute('data-lightbox-mode') === 'featured') {
+            closeLightbox();
+            return;
+        }
 
         if (event.clientX < window.innerWidth * PREV_CLICK_ZONE_RATIO) {
             stepLightbox(-1);
@@ -514,6 +568,7 @@ async function init() {
 
     renderFeatured();
     renderHero();
+    initFeaturedLightbox();
     renderInitialWall();
     initLightbox();
 }

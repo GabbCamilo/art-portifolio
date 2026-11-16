@@ -192,6 +192,7 @@ button:focus-visible,
     width: 100%;
     height: auto;
     display: block;
+    cursor: zoom-in;
 }
 
 /* Mescla esbranquiçada: a imagem desmancha em direção ao fundo da página */
@@ -520,6 +521,11 @@ button:focus-visible,
 }
 
 .lightbox[hidden] {
+    display: none;
+}
+
+.lightbox[data-lightbox-mode="featured"] .lightbox-arrow,
+.lightbox[data-lightbox-mode="featured"] .lightbox-indicators {
     display: none;
 }
 
