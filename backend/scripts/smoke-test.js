@@ -8,6 +8,8 @@ const base = 'http://localhost:3000';
 const USER = process.env.ADMIN_USERNAME || 'admin';
 const PASS = process.env.ADMIN_PASSWORD;
 const IMAGE_PATH = path.resolve(__dirname, '../../storage/images/natureza-abstrata.jpg');
+const PNG_BYTES = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+const PNG_PATH = path.resolve(__dirname, '../../storage/images/smoke-teste.png');
 
 async function req(method, path, body, token) {
     const headers = {};
@@ -26,6 +28,17 @@ async function req(method, path, body, token) {
 async function reqUpload(filePath, token, slot) {
     const form = new FormData();
     form.append('file', new Blob([fs.readFileSync(filePath)], { type: 'image/jpeg' }), 'upload.jpg');
+    const headers = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch(base + '/api/admin/uploads?slot=' + slot, { method: 'POST', headers, body: form });
+    let data = null;
+    try { data = await res.json(); } catch {}
+    return { status: res.status, data };
+}
+
+async function reqUploadBytes(buffer, token, slot, fileName, mime) {
+    const form = new FormData();
+    form.append('file', new Blob([buffer], { type: mime }), fileName);
     const headers = {};
     if (token) headers.Authorization = `Bearer ${token}`;
     const res = await fetch(base + '/api/admin/uploads?slot=' + slot, { method: 'POST', headers, body: form });
@@ -161,6 +174,14 @@ async function main() {
     check('upload retornou file_name', typeof feedFile === 'string' && feedFile.length > 0);
     check('arquivo armazenado', fs.existsSync(path.resolve(__dirname, '../../storage/images/' + feedFile)));
 
+    // 20b. upload slot feed com PNG -> 200 e arquivo armazenado
+    fs.writeFileSync(PNG_PATH, PNG_BYTES);
+    const pngRes = await reqUploadBytes(PNG_BYTES, token, 'feed', 'teste.png', 'image/png');
+    check('upload png feed = 200', pngRes.status === 200);
+    const pngFile = pngRes.data && pngRes.data.image && pngRes.data.image.file_name;
+    check('upload png retornou file_name', typeof pngFile === 'string' && pngFile.length > 0);
+    check('arquivo png armazenado', fs.existsSync(path.resolve(__dirname, '../../storage/images/' + pngFile)));
+
     // 21. upload slot featured -> 200 e e destaque unico
     r = await reqUpload(IMAGE_PATH, token, 'featured');
     check('upload featured = 200', r.status === 200);
@@ -196,6 +217,7 @@ async function main() {
     r = await req('GET', '/api/admin/session', null, token);
     check('sessao apos logout = 401', r.status === 401);
 
+    try { fs.unlinkSync(PNG_PATH); } catch {}
     let pass = 0;
     for (const ok of results) if (ok) pass++;
     console.log(`\n${pass}/${results.length} testes passaram`);
