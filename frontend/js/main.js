@@ -500,6 +500,53 @@ function initFeaturedLightbox() {
     });
 }
 
+/* -------------------------------------
+   IMAGEM DE PERFIL DO HERO (PROFILE)
+   ------------------------------------- */
+
+function openProfileLightbox() {
+    const profile = state.artist && state.artist.image;
+    if (!profile) return;
+
+    const lightbox = document.getElementById('lightbox');
+    const image = document.getElementById('lightbox-image');
+    const name = document.getElementById('lightbox-name');
+    if (!lightbox || !image || !name) return;
+
+    state.lastFocusedElement = document.activeElement;
+
+    image.src = imageSrc(profile);
+    image.alt = profile.file_name + ' — imagem do perfil';
+    image.width = profile.width;
+    image.height = profile.height;
+    name.textContent = profile.file_name;
+
+    lightbox.setAttribute('data-lightbox-mode', 'profile');
+    lightbox.hidden = false;
+    document.body.classList.add('lightbox-open');
+    document.addEventListener('keydown', onLightboxKeydown);
+
+    const closeButton = document.getElementById('lightbox-close');
+    if (closeButton) {
+        closeButton.focus();
+    }
+}
+
+function initProfileLightbox() {
+    const frame = document.getElementById('hero-frame');
+    if (!frame) return;
+
+    frame.addEventListener('click', function () {
+        openProfileLightbox();
+    });
+    frame.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openProfileLightbox();
+        }
+    });
+}
+
 function initLightbox() {
     const lightbox = document.getElementById('lightbox');
     if (!lightbox) return;
@@ -511,7 +558,7 @@ function initLightbox() {
     lightbox.addEventListener('click', event => {
         if (event.target.closest('button')) return;
 
-        if (lightbox.getAttribute('data-lightbox-mode') === 'featured') {
+        if (lightbox.getAttribute('data-lightbox-mode') === 'featured' || lightbox.getAttribute('data-lightbox-mode') === 'profile') {
             closeLightbox();
             return;
         }
@@ -569,6 +616,7 @@ async function init() {
     renderFeatured();
     renderHero();
     initFeaturedLightbox();
+    initProfileLightbox();
     renderInitialWall();
     initLightbox();
 }

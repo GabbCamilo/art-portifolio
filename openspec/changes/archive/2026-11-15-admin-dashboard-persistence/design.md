@@ -24,6 +24,8 @@
 
 12. **Destaque da imagem do hero ao clicar**: a obra em destaque (`featured-band`, imagem `featured-image`) abre a mesma visualização ampliada (lightbox) usada pelas imagens unitárias do muro, ao clicar ou ao pressionar Enter/Espaço (elemento com `role="button"` e `tabindex="0"`). Todas as bordas/área escura ao redor da imagem (backdrop do lightbox) funcionam como espaço de clique para fechar/sair da visualização destacada; setas de navegação e indicadores são ocultos neste modo, pois é uma imagem única.
 
+13. **Destaque da imagem de perfil do hero ao clicar**: a imagem do perfil (`hero-image`, dentro de `.hero-frame`) abre a mesma visualização ampliada (lightbox) das imagens unitárias do muro, ao clicar ou ao pressionar Enter/Espaço (`role="button"`/`tabindex="0"`/`aria-label`). A área de borda/backdrop fecha a visualização; setas e indicadores ocultos no modo `profile`.
+
 ## Riscos
 
 - Nome de arquivo duplicado no upload: `ON DUPLICATE KEY UPDATE` reusa a linha existente no mesmo slot.
