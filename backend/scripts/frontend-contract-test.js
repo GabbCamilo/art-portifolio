@@ -63,7 +63,7 @@ console.log('admin.js carregado e inicializado sem erros (cenario login.html sim
 
 const indexHtml = fs.readFileSync(path.resolve(__dirname, '../../frontend/index.html'), 'utf8');
 if (indexHtml.includes('hero-topics')) throw new Error('index.html ainda contem hero-topics');
-if (!indexHtml.includes('btn-refresh')) throw new Error('index.html falta botao btn-refresh');
+if (indexHtml.includes('btn-refresh')) throw new Error('index.html ainda contem botao btn-refresh (removido)');
 
 const dashboardHtml = fs.readFileSync(path.resolve(__dirname, '../../frontend/admin/dashboard.html'), 'utf8');
 if (dashboardHtml.includes('topics-list') || dashboardHtml.includes('btn-add-topic')) throw new Error('dashboard.html ainda contem caixas de texto');

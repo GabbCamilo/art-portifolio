@@ -221,7 +221,7 @@ button:focus-visible,
 ======================================== */
 
 .hero {
-    padding: var(--space-4) 0 var(--space-6);
+    padding: var(--space-4) 0 var(--space-3);
 }
 
 .hero-split {
@@ -295,7 +295,7 @@ button:focus-visible,
    ======================================== */
 
 .wall-section {
-    padding: var(--space-6) 0 var(--space-8);
+    padding: var(--space-3) 0 var(--space-8);
 }
 
 .wall-header {

@@ -194,10 +194,19 @@ function renderHero() {
     if (featured) {
         document.getElementById('hero-description').textContent = featured.description || '';
         document.getElementById('hero-complementary').textContent = featured.complementary || '';
+        document.getElementById('hero-description').hidden = !featured.description;
     }
 
     const descriptionText = document.getElementById('hero-description-text');
-    if (descriptionText) descriptionText.textContent = artist.description || '';
+    if (descriptionText) {
+        if (artist.description) {
+            descriptionText.textContent = artist.description;
+            descriptionText.hidden = false;
+        } else {
+            descriptionText.textContent = '';
+            descriptionText.hidden = true;
+        }
+    }
 
     const labels = state.artist.labels || {};
     document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
@@ -287,7 +296,7 @@ function renderInitialWall() {
     if (!wall || !status) return;
 
     if (apiOffline) {
-        status.textContent = 'Serviço de dados indisponível. Clique em "Atualizar" para tentar novamente.';
+        status.textContent = 'Serviço de dados indisponível. Tente recarregar a página.';
         return;
     }
 
@@ -572,40 +581,13 @@ function initLightbox() {
         } else {
             stepLightbox(1);
         }
-    });
-}
+});
 
-const btnRefresh = typeof document !== 'undefined' && document.getElementById('btn-refresh');
-if (btnRefresh) {
-    btnRefresh.addEventListener('click', async function () {
-        const status = document.getElementById('feed-status');
-        try {
-            apiOffline = false;
-            await loadInitialData();
-            renderFeatured();
-            renderHero();
-            const wall = document.getElementById('wall');
-            wall.innerHTML = '';
-            renderInitialWall();
-            if (status) {
-                status.textContent = 'Atualizado.';
-                setTimeout(function () {
-                    if (status && status.textContent === 'Atualizado.') {
-                        status.textContent = state.useApi ? 'Role para carregar mais publicações.' : 'Serviço de dados indisponível. Clique em Atualizar.';
-                    }
-                }, 2000);
-            }
-        } catch (e) {
-            apiOffline = true;
-            if (status) status.textContent = 'Falha ao atualizar.';
-        }
-    });
 }
 
 /* -------------------------------------
    9. INICIALIZAÇÃO
    ------------------------------------- */
-
 async function init() {
     try {
         await loadInitialData();
@@ -614,7 +596,7 @@ async function init() {
         apiOffline = true;
         console.warn('[feed] API indisponível.', err);
         const status = document.getElementById('feed-status');
-        if (status) status.textContent = 'Serviço de dados indisponível. Clique em "Atualizar" para tentar novamente.';
+        if (status) status.textContent = 'Serviço de dados indisponível. Tente recarregar a página.';
     }
 
     renderFeatured();
