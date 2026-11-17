@@ -11,6 +11,8 @@ fs.mkdirSync(dist, { recursive: true });
 const entries = fs.readdirSync(src, { withFileTypes: true });
 
 for (const entry of entries) {
+  if (entry.name === 'dist' || entry.name === 'node_modules') continue;
+
   if (entry.isDirectory()) continue;
 
   const ext = path.extname(entry.name).toLowerCase();
@@ -23,9 +25,10 @@ for (const entry of entries) {
   }
 }
 
-// Copiar subpastas (css, js, etc.)
 for (const entry of entries) {
   if (!entry.isDirectory()) continue;
+  if (entry.name === 'dist' || entry.name === 'node_modules') continue;
+
   const srcDir = path.join(src, entry.name);
   const distDir = path.join(dist, entry.name);
   fs.cpSync(srcDir, distDir, { recursive: true });
