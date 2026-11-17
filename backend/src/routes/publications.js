@@ -41,20 +41,21 @@ router.get('/publications', async (req, res, next) => {
         const where = [];
         const params = [];
         if (featured === 'true') {
-            where.push('featured = 1');
+            where.push('featured = true');
         } else if (featured === 'false') {
-            where.push('featured = 0');
+            where.push('featured = false');
         }
         const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
-        const [countRows] = await pool.query(
+        const { rows: countRows } = await pool.query(
             `SELECT COUNT(*) AS total FROM publications ${whereSql}`,
             params
         );
         const total = countRows[0].total;
 
-        const [rows] = await pool.query(
-            `SELECT * FROM publications ${whereSql} ORDER BY published_at DESC, id DESC LIMIT ? OFFSET ?`,
+        const paramCount = params.length;
+        const { rows } = await pool.query(
+            `SELECT * FROM publications ${whereSql} ORDER BY published_at DESC, id DESC LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`,
             [...params, limit, offset]
         );
 
@@ -75,13 +76,13 @@ router.post('/admin/publications', requireAuth, async (req, res, next) => {
         }
         const { description, complementary, featured, file_name, file_size, width, height } = req.body;
 
-        const [result] = await pool.query(
+        await pool.query(
             `INSERT INTO publications (description, complementary, published_at, featured, file_name, file_size, width, height)
-             VALUES ('', '', CURRENT_DATE, ?, ?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE featured = VALUES(featured), file_size = VALUES(file_size), width = VALUES(width), height = VALUES(height)`,
-            [featured ? 1 : 0, file_name, file_size, width, height]
+             VALUES ('', '', CURRENT_DATE, $1, $2, $3, $4, $5)
+             ON CONFLICT (file_name) DO UPDATE SET featured = EXCLUDED.featured, file_size = EXCLUDED.file_size, width = EXCLUDED.width, height = EXCLUDED.height`,
+            [featured, file_name, file_size, width, height]
         );
-        const [rows] = await pool.query('SELECT * FROM publications WHERE file_name = ?', [file_name]);
+        const { rows } = await pool.query('SELECT * FROM publications WHERE file_name = $1', [file_name]);
         res.status(201).json(mapPublication(rows[0]));
     } catch (err) {
         next(err);
@@ -103,15 +104,15 @@ router.put('/admin/publications/:id', requireAuth, async (req, res, next) => {
             return res.status(400).json({ error: 'Validação falhou', details: ['complementary: string obrigatória'] });
         }
 
-        const [fileRows] = await pool.query('SELECT file_name FROM publications WHERE id = ?', [id]);
+        const { rows: fileRows } = await pool.query('SELECT file_name FROM publications WHERE id = $1', [id]);
         if (fileRows.length === 0) {
             return res.status(404).json({ error: 'Publicação não encontrada' });
         }
         await pool.query(
-            `UPDATE publications SET description = ?, complementary = ? WHERE id = ?`,
+            `UPDATE publications SET description = $1, complementary = $2 WHERE id = $3`,
             [description || '', complementary || '', id]
         );
-        const [rows] = await pool.query('SELECT * FROM publications WHERE id = ?', [id]);
+        const { rows } = await pool.query('SELECT * FROM publications WHERE id = $1', [id]);
         res.json(mapPublication(rows[0], true));
     } catch (err) {
         next(err);
@@ -124,11 +125,11 @@ router.delete('/admin/publications/:id', requireAuth, async (req, res, next) => 
         if (!Number.isInteger(id)) {
             return res.status(400).json({ error: 'ID inválido: deve ser numérico' });
         }
-        const [fileRows] = await pool.query('SELECT file_name FROM publications WHERE id = ?', [id]);
+        const { rows: fileRows } = await pool.query('SELECT file_name FROM publications WHERE id = $1', [id]);
         if (fileRows.length === 0) {
             return res.status(404).json({ error: 'Publicação não encontrada' });
         }
-        await pool.query('DELETE FROM publications WHERE id = ?', [id]);
+        await pool.query('DELETE FROM publications WHERE id = $1', [id]);
 
         const base = path.join(__dirname, '../../storage/images', fileRows[0].file_name);
         await unlink(base).catch(() => {});
@@ -148,7 +149,7 @@ router.get('/publications/:id', async (req, res, next) => {
         if (!Number.isInteger(id)) {
             return res.status(400).json({ error: 'ID inválido: deve ser numérico' });
         }
-        const [rows] = await pool.query('SELECT * FROM publications WHERE id = ?', [id]);
+        const { rows } = await pool.query('SELECT * FROM publications WHERE id = $1', [id]);
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Publicação não encontrada' });
         }

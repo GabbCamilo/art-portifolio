@@ -32,7 +32,7 @@ function validateArtist(body) {
 
 router.get('/artist', async (req, res, next) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
+        const { rows } = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Perfil do artista não encontrado' });
         }
@@ -50,10 +50,10 @@ router.put('/admin/artist', requireAuth, async (req, res, next) => {
         }
         const { name, location, medium, website, store, patreon, labels } = req.body;
         await pool.query(
-            `UPDATE artist_profile SET name = ?, location = ?, medium = ?, website = ?, store = ?, patreon = ?, labels = ? WHERE id = 1`,
+            `UPDATE artist_profile SET name = $1, location = $2, medium = $3, website = $4, store = $5, patreon = $6, labels = $7 WHERE id = 1`,
             [name, location, medium, website, store, patreon, JSON.stringify(labels || {})]
         );
-        const [artistRows] = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
+        const { rows: artistRows } = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
         res.json(mapArtist(artistRows[0]));
     } catch (err) {
         next(err);

@@ -23,8 +23,8 @@ router.post('/admin/login', async (req, res, next) => {
             return res.status(400).json({ error: 'Validação falhou', details: errors });
         }
         const { username, password } = req.body;
-        const [rows] = await pool.query(
-            'SELECT id, username, password_hash FROM admin_users WHERE username = ?',
+        const { rows } = await pool.query(
+            'SELECT id, username, password_hash FROM admin_users WHERE username = $1',
             [username]
         );
         if (rows.length === 0 || !verifyPassword(password, rows[0].password_hash)) {

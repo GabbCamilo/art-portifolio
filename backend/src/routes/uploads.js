@@ -55,31 +55,31 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
 
         if (slot === 'profile') {
             await pool.query(
-                `UPDATE artist_profile SET image_file_name = ?, image_file_size = ?, image_width = ?, image_height = ? WHERE id = 1`,
+                `UPDATE artist_profile SET image_file_name = $1, image_file_size = $2, image_width = $3, image_height = $4 WHERE id = 1`,
                 [file_name, file_size, width, height]
             );
-            const [rows] = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
+            const { rows } = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
             return res.json({ image: { file_name, file_size, width, height } });
         }
 
-        const featured = slot === 'featured' ? 1 : 0;
-        const [existing] = await pool.query('SELECT id FROM publications WHERE file_name = ?', [file_name]);
+        const featured = slot === 'featured';
+        const { rows: existing } = await pool.query('SELECT id FROM publications WHERE file_name = $1', [file_name]);
         if (existing.length > 0) {
-            if (featured === 1) {
-                await pool.query('UPDATE publications SET featured = 0 WHERE featured = 1');
+            if (featured) {
+                await pool.query('UPDATE publications SET featured = false WHERE featured = true');
             }
             await pool.query(
-                `UPDATE publications SET featured = ?, file_size = ?, width = ?, height = ?, description = '', complementary = '' WHERE id = ?`,
+                `UPDATE publications SET featured = $1, file_size = $2, width = $3, height = $4, description = '', complementary = '' WHERE id = $5`,
                 [featured, file_size, width, height, existing[0].id]
             );
         } else {
             await pool.query(
                 `INSERT INTO publications (description, complementary, published_at, featured, file_name, file_size, width, height)
-                 VALUES ('', '', CURRENT_DATE, ?, ?, ?, ?, ?)`,
+                 VALUES ('', '', CURRENT_DATE, $1, $2, $3, $4, $5)`,
                 [featured, file_name, file_size, width, height]
             );
         }
-        const [rows] = await pool.query('SELECT * FROM publications WHERE file_name = ?', [file_name]);
+        const { rows } = await pool.query('SELECT * FROM publications WHERE file_name = $1', [file_name]);
         res.json(mapPublication(rows[0]));
     } catch (err) {
         next(err);

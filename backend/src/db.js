@@ -1,39 +1,30 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 3306,
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    charset: 'utf8mb4',
-    dateStrings: true,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+const connectionString = process.env.DATABASE_URL;
+
+const pool = connectionString
+    ? new Pool({
+          connectionString,
+          ssl: { rejectUnauthorized: false },
+      })
+    : new Pool({
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT, 10) || 5432,
+          database: process.env.DB_NAME,
+          user: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+      });
+
+const displayName = connectionString
+    ? connectionString.replace(/^.*@/, '')
+    : `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+
+pool.on('connect', () => {
+    console.log('[db] Conectado ao PostgreSQL:', displayName);
+});
+pool.on('error', (err) => {
+    console.error('[db] Erro inesperado no pool do PostgreSQL:', err.message);
 });
 
-pool.getConnection()
-    .then(conn => {
-        console.log('[db] Conectado ao MySQL:', process.env.DB_NAME);
-        conn.release();
-    })
-    .catch(err => {
-        console.error('[db] Falha de conexão com o MySQL:', err.message);
-    });
-
-async function ensureDescriptionColumn() {
-    try {
-        const [cols] = await pool.query("SHOW COLUMNS FROM artist_profile LIKE 'description'");
-        if (cols.length === 0) {
-            await pool.query("ALTER TABLE artist_profile ADD COLUMN description TEXT NULL");
-            console.log('[db] Coluna description adicionada à artist_profile');
-        }
-    } catch (e) {
-        console.warn('[db] Não foi possível adicionar coluna description:', e.message);
-    }
-}
-
 module.exports = pool;
-module.exports.ensureDescriptionColumn = ensureDescriptionColumn;
