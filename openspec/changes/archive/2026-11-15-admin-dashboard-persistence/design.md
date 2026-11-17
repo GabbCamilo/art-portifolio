@@ -28,6 +28,10 @@
 
 14. **Recorte das imagens publicadas no muro**: as imagens da grade pública (`.wall-item img`) usam `object-fit: cover` com `object-position: top`, mostrando o topo e o meio inteiros da obra; apenas a base (parte inferior) é ocultada pelo recorte do container.
 
+15. **Descrição da obra principal na página pública**: o hero público exibe um bloco com rótulo fixo "Descrição da obra principal selecionada pelo proprietário." seguido do texto descritivo armazenado em `artist.description`, exibido em `hero-description-text`. O texto é editável no admin (campo `description` dos Details) e persistido via `PUT /api/admin/artist`.
+
+16. **Website como link "Click Here!"**: o campo Website do hero público exibe o texto "Click Here!" como um link (`<a>`) direcionado para a URL configurada em `artist.website`, aberta em nova aba (`target="_blank"`). A URL é editável no admin (campo `website` dos Details) e persistida via `PUT /api/admin/artist`.
+
 ## Riscos
 
 - Nome de arquivo duplicado no upload: `ON DUPLICATE KEY UPDATE` reusa a linha existente no mesmo slot.

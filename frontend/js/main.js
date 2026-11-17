@@ -66,6 +66,7 @@ async function loadArtist() {
         website: data.website,
         store: data.store,
         patreon: data.patreon,
+        description: data.description || '',
         labels: data.labels || {},
         image: data.image || null,
     };
@@ -182,7 +183,7 @@ function renderHero() {
     websiteLink.innerHTML = '';
     const websiteAnchor = document.createElement('a');
     websiteAnchor.href = artist.website;
-    websiteAnchor.textContent = 'Clique aqui';
+    websiteAnchor.textContent = 'Click Here!';
     websiteAnchor.target = '_blank';
     websiteAnchor.rel = 'noopener';
     websiteLink.appendChild(websiteAnchor);
@@ -194,6 +195,9 @@ function renderHero() {
         document.getElementById('hero-description').textContent = featured.description || '';
         document.getElementById('hero-complementary').textContent = featured.complementary || '';
     }
+
+    const descriptionText = document.getElementById('hero-description-text');
+    if (descriptionText) descriptionText.textContent = artist.description || '';
 
     const labels = state.artist.labels || {};
     document.querySelectorAll('dt[data-label-for]').forEach(function (el) {
