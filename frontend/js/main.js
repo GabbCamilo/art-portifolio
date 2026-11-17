@@ -24,7 +24,7 @@ const DEFAULT_LABELS = {
    2. CONFIGURAÇÃO E ESTADO
    ------------------------------------- */
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'API_BASE_PLACEHOLDER';
 const STORAGE_BASE = API_BASE.replace(/\/api$/, '') + '/storage';
 const BATCH_INITIAL = 6;
 const BATCH_NEXT = 4;
