@@ -503,7 +503,7 @@
             makeEditable(el, { onSave: saveArtist });
         });
         document.querySelectorAll('dd[data-field]').forEach(function (el) {
-            makeEditable(el, { onSave: saveArtist });
+            makeEditable(el, { multiline: el.hasAttribute('data-multiline'), onSave: saveArtist });
         });
         document.querySelectorAll('.details-description[data-field="description"], .details-complementary[data-field="complementary"]').forEach(function (el) {
             makeEditable(el, { multiline: true, onSave: saveFeatured });
