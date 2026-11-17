@@ -237,7 +237,12 @@
             labels[el.dataset.labelFor] = el.textContent;
         });
         document.querySelectorAll('dd[data-field]').forEach(function (el) {
-            fields[el.dataset.field] = el.textContent;
+            if (el.dataset.field === 'website') {
+                var link = el.querySelector('a');
+                fields[el.dataset.field] = link ? link.getAttribute('href') : el.textContent;
+            } else {
+                fields[el.dataset.field] = el.textContent;
+            }
         });
         return Object.assign({}, fields, { labels: labels });
     }
