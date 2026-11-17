@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS artist_profile (
     website VARCHAR(255) NOT NULL,
     store VARCHAR(255) NOT NULL,
     patreon VARCHAR(255) NOT NULL,
+    description TEXT NULL,
     labels JSON NOT NULL DEFAULT ('{}'),
     image_file_name VARCHAR(255) NULL,
     image_file_size VARCHAR(32) NULL,

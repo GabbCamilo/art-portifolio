@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin');
 const uploadsRoutes = require('./routes/uploads');
 const authRoutes = require('./routes/auth');
 const errorHandler = require('./middleware/errorHandler');
+const { ensureDescriptionColumn } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,8 @@ app.use((req, res) => {
 });
 
 app.use(errorHandler);
+
+ensureDescriptionColumn().catch(() => {});
 
 app.listen(PORT, () => {
     console.log(`Art Portfolio API rodando em http://localhost:${PORT}`);
