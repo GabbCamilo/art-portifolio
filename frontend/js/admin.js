@@ -195,7 +195,13 @@
 
             input.addEventListener('keydown', function (event) {
                 if (event.key === 'Enter') {
-                    if (multiline && event.shiftKey) return;
+                    if (multiline) {
+                        if (event.ctrlKey || event.metaKey) {
+                            event.preventDefault();
+                            save();
+                        }
+                        return;
+                    }
                     event.preventDefault();
                     save();
                 }
@@ -221,7 +227,12 @@
             el.textContent = (artist.labels || {})[el.dataset.labelFor] || '';
         });
         document.querySelectorAll('dd[data-field]').forEach(function (el) {
-            el.textContent = artist[el.dataset.field] || '';
+            if (el.classList.contains('is-editing')) return;
+            if (el.dataset.field === 'description') {
+                el.textContent = (artist.labels && artist.labels.description) || '';
+            } else {
+                el.textContent = artist[el.dataset.field] || '';
+            }
         });
         var profile = document.getElementById('slot-profile-img');
         if (profile && artist.image) {
@@ -240,6 +251,9 @@
             if (el.dataset.field === 'website') {
                 var link = el.querySelector('a');
                 fields[el.dataset.field] = link ? link.getAttribute('href') : el.textContent;
+            } else if (el.dataset.field === 'description') {
+                if (!labels) labels = {};
+                labels.description = el.textContent;
             } else {
                 fields[el.dataset.field] = el.textContent;
             }

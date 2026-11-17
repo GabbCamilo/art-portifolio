@@ -4,7 +4,7 @@ const pool = require('../db');
 const { requireAuth } = require('../middleware/auth');
 const { mapArtist } = require('../lib/mappers');
 
-const LABEL_KEYS = ['artist', 'location', 'medium', 'website', 'store', 'patreon'];
+const LABEL_KEYS = ['artist', 'location', 'medium', 'website', 'store', 'patreon', 'description'];
 
 function validateArtist(body) {
     const errors = [];
@@ -48,10 +48,10 @@ router.put('/admin/artist', requireAuth, async (req, res, next) => {
         if (errors.length > 0) {
             return res.status(400).json({ error: 'Validação falhou', details: errors });
         }
-        const { name, location, medium, website, store, patreon, description, labels } = req.body;
+        const { name, location, medium, website, store, patreon, labels } = req.body;
         await pool.query(
-            `UPDATE artist_profile SET name = ?, location = ?, medium = ?, website = ?, store = ?, patreon = ?, description = ?, labels = ? WHERE id = 1`,
-            [name, location, medium, website, store, patreon, description, JSON.stringify(labels || {})]
+            `UPDATE artist_profile SET name = ?, location = ?, medium = ?, website = ?, store = ?, patreon = ?, labels = ? WHERE id = 1`,
+            [name, location, medium, website, store, patreon, JSON.stringify(labels || {})]
         );
         const [artistRows] = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
         res.json(mapArtist(artistRows[0]));

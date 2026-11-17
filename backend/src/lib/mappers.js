@@ -30,7 +30,6 @@ function mapArtist(row) {
         website: row.website,
         store: row.store,
         patreon: row.patreon,
-        description: row.description || '',
         labels: (typeof row.labels === 'string' ? JSON.parse(row.labels || '{}') : row.labels) || {},
         image: row.image_file_name
             ? {

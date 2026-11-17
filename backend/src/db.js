@@ -18,7 +18,6 @@ pool.getConnection()
     .then(conn => {
         console.log('[db] Conectado ao MySQL:', process.env.DB_NAME);
         conn.release();
-        return ensureDescriptionColumn();
     })
     .catch(err => {
         console.error('[db] Falha de conexão com o MySQL:', err.message);

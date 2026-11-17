@@ -199,8 +199,9 @@ function renderHero() {
 
     const descriptionText = document.getElementById('hero-description-text');
     if (descriptionText) {
-        if (artist.description) {
-            descriptionText.textContent = artist.description;
+        const description = (artist.labels && artist.labels.description) || artist.description || '';
+        if (description) {
+            descriptionText.textContent = description;
             descriptionText.hidden = false;
         } else {
             descriptionText.textContent = '';
