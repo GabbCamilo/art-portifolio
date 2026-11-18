@@ -7,7 +7,7 @@
 (function () {
     'use strict';
 
-    var API_BASE = 'http://localhost:3000/api';
+    var API_BASE = 'API_BASE_PLACEHOLDER';
     var STORAGE_BASE = API_BASE.replace(/\/api$/, '') + '/storage';
     var TOKEN_KEY = 'artfolio_admin_token';
 
