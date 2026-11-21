@@ -241,8 +241,7 @@
         });
         var profile = document.getElementById('slot-profile-img');
         if (profile && artist.image) {
-            profile.src = imageUrl(artist.image.file_name);
-            profile.alt = 'Imagem do perfil';
+            setImageWithFallback(profile, artist.image.file_name, 'Imagem do perfil', artist.image.width, artist.image.height);
         }
     }
 
@@ -349,6 +348,26 @@
         return STORAGE_BASE + '/images/' + fileName;
     }
 
+    function proxyImageUrl(url) {
+        return API_BASE + '/media?url=' + encodeURIComponent(url);
+    }
+
+    function setImageWithFallback(img, fileName, altText, fallbackWidth, fallbackHeight) {
+        var resolved = imageUrl(fileName);
+        delete img.dataset.proxyTried;
+        img.alt = altText;
+        img.onerror = function () {
+            if (!this.dataset.proxyTried && /^https?:\/\/res\.cloudinary\.com\//i.test(resolved)) {
+                this.dataset.proxyTried = '1';
+                this.src = proxyImageUrl(resolved);
+                return;
+            }
+            this.onerror = null;
+            this.src = placeholderSrc(fallbackWidth || this.width || 800, fallbackHeight || this.height || 600, this.alt);
+        };
+        img.src = resolved;
+    }
+
     function placeholderSrc(width, height, label) {
         var safeLabel = label.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         var svg =
@@ -366,14 +385,10 @@
 
         var img = document.createElement('img');
         img.className = 'post-image';
-        img.src = imageUrl(post.image.file_name);
-        img.alt = post.image.file_name;
         img.width = post.image.width;
         img.height = post.image.height;
         img.decoding = 'async';
-        img.onerror = function () {
-            this.src = placeholderSrc(this.width, this.height, this.alt);
-        };
+        setImageWithFallback(img, post.image.file_name, post.image.file_name, post.image.width, post.image.height);
 
         var remove = document.createElement('button');
         remove.type = 'button';
@@ -438,15 +453,12 @@
         var msg = document.getElementById('slot-featured-msg');
         if (img) {
             if (featured) {
-                img.src = imageUrl(featured.image.file_name);
-                img.alt = 'Destaque principal';
+                setImageWithFallback(img, featured.image.file_name, 'Destaque principal', featured.image.width, featured.image.height);
             } else {
+                img.onerror = null;
                 img.src = placeholderSrc(1200, 900, 'sem destaque');
                 img.alt = 'Destaque principal';
             }
-            img.onerror = function () {
-                this.src = placeholderSrc(this.width, this.height, this.alt);
-            };
         }
         if (msg) {
             msg.textContent = featured ? 'Destaque carregado.' : 'Nenhum destaque definido.';
@@ -483,11 +495,7 @@
             }
             if (slot === 'featured' || slot === 'profile') {
                 if (img) {
-                    img.src = imageUrl(fileName);
-                    img.alt = file.name;
-                    img.onerror = function () {
-                        this.src = placeholderSrc(this.width, this.height, this.alt);
-                    };
+                    setImageWithFallback(img, fileName, file.name);
                 }
             }
             if (slot === 'feed') {

@@ -138,6 +138,22 @@ function imageSrc(image) {
     return STORAGE_BASE + '/images/' + image.file_name;
 }
 
+function setImageWithFallback(img, image, altText) {
+    const resolved = imageSrc(image);
+    delete img.dataset.proxyTried;
+    img.alt = altText;
+    img.onerror = function () {
+        if (!this.dataset.proxyTried && /^https?:\/\/res\.cloudinary\.com\//i.test(resolved)) {
+            this.dataset.proxyTried = '1';
+            this.src = API_BASE + '/media?url=' + encodeURIComponent(resolved);
+            return;
+        }
+        this.onerror = null;
+        this.src = svgPlaceholder(this.width || 800, this.height || 400, image.tone || 0, this.alt);
+    };
+    img.src = resolved;
+}
+
 /* -------------------------------------
    5. HEADER — OBRA EM DESTAQUE
    ------------------------------------- */
@@ -149,10 +165,9 @@ function renderFeatured() {
     const image = document.getElementById('featured-image');
     if (!image) return;
 
-    image.src = imageSrc(featured.image);
-    image.alt = featured.image.file_name + ' — obra em destaque';
     image.width = featured.image.width;
     image.height = featured.image.height;
+    setImageWithFallback(image, featured.image, featured.image.file_name + ' — obra em destaque');
 }
 
 /* -------------------------------------
@@ -167,10 +182,9 @@ function renderHero() {
     const heroImage = document.getElementById('hero-image');
     if (heroImage) {
         if (profile) {
-            heroImage.src = imageSrc(profile);
-            heroImage.alt = 'Imagem do perfil';
             heroImage.width = profile.width;
             heroImage.height = profile.height;
+            setImageWithFallback(heroImage, profile, 'Imagem do perfil');
         } else {
             heroImage.src = '';
             heroImage.alt = '';
@@ -233,13 +247,9 @@ function createWallItem(post, globalIndex) {
     button.setAttribute('aria-label', 'Abrir imagem em visualização ampliada');
 
     const img = document.createElement('img');
-    img.src = imageSrc(post.image);
-    img.alt = post.image.file_name;
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.onerror = function () {
-        this.src = svgPlaceholder(this.width || 800, this.height || 400, 0, this.alt);
-    };
+    setImageWithFallback(img, post.image, post.image.file_name);
     button.appendChild(img);
 
     const tooltip = document.createElement('span');

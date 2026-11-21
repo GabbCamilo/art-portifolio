@@ -8,6 +8,7 @@ const publicationsRoutes = require('./routes/publications');
 const adminRoutes = require('./routes/admin');
 const uploadsRoutes = require('./routes/uploads');
 const authRoutes = require('./routes/auth');
+const mediaRoutes = require('./routes/media');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api', artistRoutes);
 app.use('/api', publicationsRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', uploadsRoutes);
+app.use('/api', mediaRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
