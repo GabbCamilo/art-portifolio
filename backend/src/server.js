@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use('/storage', express.static(path.join(__dirname, '../../storage')));
+// Arquivos de imagem agora são servidos pelo Cloudinary (URLs diretas).
+// O serviço local /storage foi removido para evitar disco efêmero do Render.
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'art-portfolio-api', timestamp: new Date().toISOString() });

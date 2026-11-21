@@ -6,6 +6,14 @@ const { requireAuth } = require('../middleware/auth');
 const { mapArtist, mapPublication } = require('../lib/mappers');
 const path = require('path');
 const { unlink } = require('fs/promises');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -15,33 +23,28 @@ const upload = multer({
     },
 });
 
-const IMAGE_SERVICE_URL = process.env.IMAGE_SERVICE_URL;
-const STORAGE_ROOT = path.join(__dirname, '../../storage');
-
-if (!IMAGE_SERVICE_URL) {
-    console.error('[uploads] IMAGE_SERVICE_URL não definida. Uploads de imagem não funcionarão em produção.');
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    console.error('[uploads] Variáveis do Cloudinary não configuradas. Defina CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET.');
 }
 
-async function deleteStoredFiles(fileName) {
-    await unlink(path.join(STORAGE_ROOT, 'images', fileName)).catch(() => {});
-    const stem = path.parse(fileName).name;
-    for (const variant of ['thumbnail', 'medium', 'full']) {
-        await unlink(path.join(STORAGE_ROOT, 'processed', `${stem}-${variant}.webp`)).catch(() => {});
-    }
-}
-
-async function processWithImageService(buffer, mimetype, originalName) {
-    const form = new FormData();
-    form.append('file', new Blob([buffer], { type: mimetype }), originalName);
-    const res = await fetch(`${IMAGE_SERVICE_URL}/process`, {
-        method: 'POST',
-        body: form,
+async function uploadToCloudinary(buffer, mimetype, originalName) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'art-portfolio',
+                resource_type: 'image',
+                use_filename: true,
+                unique_filename: false,
+                format: 'webp',
+                quality: 'auto:good',
+            },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
+        stream.end(buffer);
     });
-    if (!res.ok) {
-        const text = await res.text().catch(() => res.status.toString());
-        throw new Error(`Serviço de imagens respondeu ${res.status}: ${text}`);
-    }
-    return res.json();
 }
 
 router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, res, next) => {
@@ -54,24 +57,28 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
             return res.status(400).json({ error: 'arquivo de imagem obrigatório' });
         }
 
-        if (!IMAGE_SERVICE_URL) {
-            return res.status(503).json({ error: 'Serviço de imagens não configurado no backend. Defina IMAGE_SERVICE_URL.' });
+        if (!process.env.CLOUDINARY_CLOUD_NAME) {
+            return res.status(503).json({ error: 'Storage de imagens não configurado. Defina CLOUDINARY_* no backend.' });
         }
 
-        const result = await processWithImageService(req.file.buffer, req.file.mimetype, req.file.originalname);
-        const { file_name, file_size, width, height } = result.original;
+        const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, req.file.originalname);
+
+        const fileName = result.secure_url;
+        const file_size = `${Math.round(result.bytes / 1024)} KB`;
+        const width = result.width;
+        const height = result.height;
 
         if (slot === 'profile') {
             await pool.query(
                 `UPDATE artist_profile SET image_file_name = $1, image_file_size = $2, image_width = $3, image_height = $4 WHERE id = 1`,
-                [file_name, file_size, width, height]
+                [fileName, file_size, width, height]
             );
             const { rows } = await pool.query('SELECT * FROM artist_profile WHERE id = 1');
-            return res.json({ image: { file_name, file_size, width, height } });
+            return res.json({ image: { file_name: fileName, file_size, width, height } });
         }
 
         const featured = slot === 'featured';
-        const { rows: existing } = await pool.query('SELECT id FROM publications WHERE file_name = $1', [file_name]);
+        const { rows: existing } = await pool.query('SELECT id FROM publications WHERE file_name = $1', [fileName]);
         if (existing.length > 0) {
             if (featured) {
                 await pool.query('UPDATE publications SET featured = false WHERE featured = true');
@@ -84,10 +91,10 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
             await pool.query(
                 `INSERT INTO publications (description, complementary, published_at, featured, file_name, file_size, width, height)
                  VALUES ('', '', CURRENT_DATE, $1, $2, $3, $4, $5)`,
-                [featured, file_name, file_size, width, height]
+                [featured, fileName, file_size, width, height]
             );
         }
-        const { rows } = await pool.query('SELECT * FROM publications WHERE file_name = $1', [file_name]);
+        const { rows } = await pool.query('SELECT * FROM publications WHERE file_name = $1', [fileName]);
         res.json(mapPublication(rows[0]));
     } catch (err) {
         next(err);

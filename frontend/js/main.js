@@ -128,6 +128,7 @@ function svgPlaceholder(width, height, tone, label) {
 }
 
 function imageSrc(image) {
+    if (/^https?:\/\//i.test(image.file_name)) return image.file_name;
     return STORAGE_BASE + '/images/' + image.file_name;
 }
 

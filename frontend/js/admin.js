@@ -339,6 +339,7 @@
     ------------------------------------- */
 
     function imageUrl(fileName) {
+        if (/^https?:\/\//i.test(fileName)) return fileName;
         return STORAGE_BASE + '/images/' + fileName;
     }
 
