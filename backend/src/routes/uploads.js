@@ -4,10 +4,7 @@ const multer = require('multer');
 const pool = require('../db');
 const { requireAuth } = require('../middleware/auth');
 const { mapArtist, mapPublication } = require('../lib/mappers');
-const path = require('path');
-const { unlink } = require('fs/promises');
 const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -27,15 +24,14 @@ if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !pr
     console.error('[uploads] Variáveis do Cloudinary não configuradas. Defina CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY e CLOUDINARY_API_SECRET.');
 }
 
-async function uploadToCloudinary(buffer, mimetype, originalName) {
+async function uploadToCloudinary(buffer, originalName) {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             {
                 folder: 'art-portfolio',
                 resource_type: 'image',
                 use_filename: true,
-                unique_filename: false,
-                format: 'webp',
+                unique_filename: true,
                 quality: 'auto:good',
             },
             (error, result) => {
@@ -61,7 +57,7 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
             return res.status(503).json({ error: 'Storage de imagens não configurado. Defina CLOUDINARY_* no backend.' });
         }
 
-        const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, req.file.originalname);
+        const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
 
         const fileName = result.secure_url;
         const file_size = `${Math.round(result.bytes / 1024)} KB`;
@@ -97,6 +93,7 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
         const { rows } = await pool.query('SELECT * FROM publications WHERE file_name = $1', [fileName]);
         res.json(mapPublication(rows[0]));
     } catch (err) {
+        console.error('[uploads] Erro:', err.message);
         next(err);
     }
 });
