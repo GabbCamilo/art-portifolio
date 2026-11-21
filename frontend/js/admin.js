@@ -464,14 +464,17 @@
             body: form,
         }).then(function (res) {
             if (!res.ok) {
-                return res.json().then(function (data) {
-                    throw new Error((data && data.error) || 'Upload falhou');
+                return res.json().catch(function () { return {}; }).then(function (data) {
+                    throw new Error((data && data.error) || ('Erro HTTP ' + res.status));
                 });
             }
             return res.json();
         }).then(function (data) {
             var fileName = data.image && data.image.file_name;
             if (!fileName) throw new Error('Resposta do upload sem imagem');
+            if (slot === 'featured' && data.db_id) {
+                featuredId = data.db_id;
+            }
             if (slot === 'featured' || slot === 'profile') {
                 if (img) {
                     img.src = imageUrl(fileName);
@@ -486,7 +489,7 @@
             }
             if (msg) msg.textContent = 'Enviado.';
         }).catch(function (e) {
-            if (msg) msg.textContent = 'Falha no upload.';
+            if (msg) msg.textContent = 'Falha no upload: ' + e.message;
             console.warn('[admin] upload:', e.message);
         });
     }
@@ -550,7 +553,9 @@
                     if (artistSaveTimer) clearTimeout(artistSaveTimer);
                     await doSaveArtist();
                     if (featuredSaveTimer) clearTimeout(featuredSaveTimer);
-                    await saveFeaturedNow();
+                    if (featuredId) {
+                        await saveFeaturedNow();
+                    }
                     await loadPublications();
                     status.textContent = 'Site atualizado.';
                     status.classList.remove('is-error');

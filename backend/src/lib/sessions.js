@@ -9,12 +9,12 @@ function tokenHash(token) {
 
 async function createSession(adminId) {
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + TTL_HOURS * 3600 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+    const expiresAt = new Date(Date.now() + TTL_HOURS * 3600 * 1000);
     await pool.query(
         'INSERT INTO admin_sessions (token_hash, admin_id, expires_at) VALUES ($1, $2, $3)',
         [tokenHash(token), adminId, expiresAt]
     );
-    return { token, expiresAt };
+    return { token, expiresAt: expiresAt.toISOString() };
 }
 
 async function getSessionByToken(token) {

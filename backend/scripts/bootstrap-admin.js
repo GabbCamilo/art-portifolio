@@ -10,8 +10,8 @@ async function ensureAdmin(username, password) {
     }
     const hash = hashPassword(password);
     await pool.query(
-        `INSERT INTO admin_users (username, password_hash) VALUES (?, ?)
-         ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`,
+        `INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)
+         ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash`,
         [username, hash]
     );
     return username;

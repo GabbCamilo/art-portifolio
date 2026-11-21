@@ -3,8 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const { mapPublication } = require('../lib/mappers');
 const { requireAuth } = require('../middleware/auth');
-const path = require('path');
-const { unlink } = require('fs/promises');
+const { deleteFromCloudinaryByUrl } = require('../lib/cloudinary');
 
 function validatePublication(body) {
     const errors = [];
@@ -48,7 +47,7 @@ router.get('/publications', async (req, res, next) => {
         const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
         const { rows: countRows } = await pool.query(
-            `SELECT COUNT(*) AS total FROM publications ${whereSql}`,
+            `SELECT COUNT(*)::int AS total FROM publications ${whereSql}`,
             params
         );
         const total = countRows[0].total;
@@ -130,13 +129,9 @@ router.delete('/admin/publications/:id', requireAuth, async (req, res, next) => 
             return res.status(404).json({ error: 'Publicação não encontrada' });
         }
         await pool.query('DELETE FROM publications WHERE id = $1', [id]);
-
-        const base = path.join(__dirname, '../../storage/images', fileRows[0].file_name);
-        await unlink(base).catch(() => {});
-        const stem = path.parse(fileRows[0].file_name).name;
-        for (const variant of ['thumbnail', 'medium', 'full']) {
-            await unlink(path.join(__dirname, '../../storage/processed', `${stem}-${variant}.webp`)).catch(() => {});
-        }
+        await deleteFromCloudinaryByUrl(fileRows[0].file_name).catch((err) => {
+            console.warn('[cloudinary] Falha ao remover imagem:', err.message);
+        });
         res.status(204).end();
     } catch (err) {
         next(err);

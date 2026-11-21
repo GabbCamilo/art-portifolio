@@ -1,11 +1,14 @@
 function errorHandler(err, req, res, next) {
     console.error('[error]', err);
 
-    if (err && err.code === 'ER_DUP_ENTRY') {
+    if (err && (err.code === '23505' || err.code === 'ER_DUP_ENTRY')) {
         return res.status(409).json({ error: 'Conflito: registro duplicado (file_name já existe)' });
     }
-    if (err && err.code === 'ER_BAD_NULL_ERROR') {
+    if (err && (err.code === '23502' || err.code === 'ER_BAD_NULL_ERROR')) {
         return res.status(400).json({ error: 'Campo obrigatório ausente no banco de dados' });
+    }
+    if (err && err.code === '22001') {
+        return res.status(400).json({ error: 'Valor excede o tamanho máximo permitido no banco de dados' });
     }
 
     const status = err.status || 500;
