@@ -338,8 +338,14 @@
        4. PUBLICAÇÕES (FEED)
     ------------------------------------- */
 
+    function optimizeCloudinaryUrl(url) {
+        if (!/^https?:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//i.test(url)) return url;
+        if (/\/image\/upload\/[^/]*w_\d+/i.test(url)) return url;
+        return url.replace('/image/upload/', '/image/upload/w_1600,c_limit,f_auto,q_auto/');
+    }
+
     function imageUrl(fileName) {
-        if (/^https?:\/\//i.test(fileName)) return fileName;
+        if (/^https?:\/\//i.test(fileName)) return optimizeCloudinaryUrl(fileName);
         return STORAGE_BASE + '/images/' + fileName;
     }
 

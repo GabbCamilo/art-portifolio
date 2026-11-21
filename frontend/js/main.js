@@ -127,8 +127,14 @@ function svgPlaceholder(width, height, tone, label) {
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
+function optimizeCloudinaryUrl(url) {
+    if (!/^https?:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//i.test(url)) return url;
+    if (/\/image\/upload\/[^/]*w_\d+/i.test(url)) return url;
+    return url.replace('/image/upload/', '/image/upload/w_1600,c_limit,f_auto,q_auto/');
+}
+
 function imageSrc(image) {
-    if (/^https?:\/\//i.test(image.file_name)) return image.file_name;
+    if (/^https?:\/\//i.test(image.file_name)) return optimizeCloudinaryUrl(image.file_name);
     return STORAGE_BASE + '/images/' + image.file_name;
 }
 

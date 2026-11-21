@@ -18,6 +18,10 @@ app.use(express.json());
 // Arquivos de imagem agora são servidos pelo Cloudinary (URLs diretas).
 // O serviço local /storage foi removido para evitar disco efêmero do Render.
 
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', service: 'art-portfolio-api', health: '/api/health' });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'art-portfolio-api', timestamp: new Date().toISOString() });
 });

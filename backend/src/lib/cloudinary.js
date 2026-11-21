@@ -45,7 +45,7 @@ async function uploadBufferToCloudinary(buffer) {
                 resource_type: 'image',
                 use_filename: true,
                 unique_filename: true,
-                quality: 'auto:good',
+                transformation: [{ width: 2000, height: 2000, crop: 'limit', quality: 'auto:good' }],
             },
             (error, result) => {
                 if (error) return reject(error);
