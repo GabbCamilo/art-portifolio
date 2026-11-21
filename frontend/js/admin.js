@@ -186,10 +186,15 @@
 
             function save() {
                 var next = input.value.trim() || current;
-                element.textContent = next;
                 element.classList.remove('is-editing');
                 if (onSave) {
-                    onSave(next);
+                    onSave(next).then(function () {
+                        element.textContent = next;
+                    }).catch(function () {
+                        element.textContent = current;
+                    });
+                } else {
+                    element.textContent = next;
                 }
             }
 
@@ -275,8 +280,9 @@
     function saveArtist() {
         if (artistSaveTimer) clearTimeout(artistSaveTimer);
         artistSaveTimer = setTimeout(function () {
-            doSaveArtist().catch(function (e) {
+            return doSaveArtist().catch(function (e) {
                 console.warn('[admin] perfil:', e.message);
+                throw e;
             });
         }, 250);
     }
@@ -315,8 +321,9 @@
     function saveFeatured() {
         if (featuredSaveTimer) clearTimeout(featuredSaveTimer);
         featuredSaveTimer = setTimeout(function () {
-            saveFeaturedNow().catch(function (e) {
+            return saveFeaturedNow().catch(function (e) {
                 console.warn('[admin] apresentação:', e.message);
+                throw e;
             });
         }, 250);
     }

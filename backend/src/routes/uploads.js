@@ -15,8 +15,12 @@ const upload = multer({
     },
 });
 
-const IMAGE_SERVICE_URL = process.env.IMAGE_SERVICE_URL || 'http://localhost:8000';
+const IMAGE_SERVICE_URL = process.env.IMAGE_SERVICE_URL;
 const STORAGE_ROOT = path.join(__dirname, '../../storage');
+
+if (!IMAGE_SERVICE_URL) {
+    console.error('[uploads] IMAGE_SERVICE_URL não definida. Uploads de imagem não funcionarão em produção.');
+}
 
 async function deleteStoredFiles(fileName) {
     await unlink(path.join(STORAGE_ROOT, 'images', fileName)).catch(() => {});
@@ -48,6 +52,10 @@ router.post('/admin/uploads', requireAuth, upload.single('file'), async (req, re
         }
         if (!req.file) {
             return res.status(400).json({ error: 'arquivo de imagem obrigatório' });
+        }
+
+        if (!IMAGE_SERVICE_URL) {
+            return res.status(503).json({ error: 'Serviço de imagens não configurado no backend. Defina IMAGE_SERVICE_URL.' });
         }
 
         const result = await processWithImageService(req.file.buffer, req.file.mimetype, req.file.originalname);
