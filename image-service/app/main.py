@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import os
+import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile, File
 
 from .processing import ALLOWED_PREFIX, MAX_UPLOAD_BYTES, STORAGE_IMAGES, process_image
@@ -41,3 +43,7 @@ async def process_upload(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Falha ao processar imagem: {}".format(exc))
 
     return result
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))

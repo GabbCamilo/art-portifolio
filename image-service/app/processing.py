@@ -1,11 +1,11 @@
+import os
 from pathlib import Path
 
 from PIL import Image
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = BASE_DIR.parent
-STORAGE_IMAGES = PROJECT_ROOT / "storage" / "images"
-STORAGE_PROCESSED = PROJECT_ROOT / "storage" / "processed"
+STORAGE_ROOT = Path(os.environ.get("STORAGE_ROOT", "/tmp/storage"))
+STORAGE_IMAGES = STORAGE_ROOT / "images"
+STORAGE_PROCESSED = STORAGE_ROOT / "processed"
 
 VARIANTS = {
     "thumbnail": 400,
